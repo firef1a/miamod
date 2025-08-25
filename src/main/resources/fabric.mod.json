@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "miamod",
+  "version": "${version}",
+  "name": ".miamod",
+  "description": "one person gets meteorclient everyone else has to run",
+  "authors": ["meowara"],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/miamod/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "mia.miamod.Mod"
+    ],
+    "modmenu": [
+      "mia.miamod.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "miamod.mixins.json"
+  ],
+  "accessWidener" : "miamod.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "fabric": "*",
+    "minecraft": "1.21.3",
+    "modmenu": ">=12.0.0-beta.1"
+  },
+  "conflicts": {
+    "modutils": "*"
+  }
+}
