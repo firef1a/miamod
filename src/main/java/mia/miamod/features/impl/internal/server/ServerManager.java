@@ -1,8 +1,11 @@
 package mia.miamod.features.impl.internal.server;
 
 import mia.miamod.Mod;
+import mia.miamod.features.Categories;
+import mia.miamod.features.Category;
 import mia.miamod.features.Feature;
 import mia.miamod.features.FeatureManager;
+import mia.miamod.features.listeners.impl.AlwaysEnabled;
 import mia.miamod.features.listeners.impl.PacketListener;
 import mia.miamod.features.listeners.impl.ServerConnectionEventListener;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -15,12 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.regex.Pattern;
 
-public class ServerManager extends Feature implements ServerConnectionEventListener, PacketListener {
+public class ServerManager extends Feature implements ServerConnectionEventListener, PacketListener, AlwaysEnabled {
     public static RecognizedServers currentServer = RecognizedServers.NONE;
     public static ServerConnectionStatus connectionStatus = ServerConnectionStatus.NONE;
 
-    public ServerManager() {
-        super("Server Manager", "server_manager", "Detects and executes features when you join and leave DF. Will literally brick every other feature if disabled.");
+    public ServerManager(Categories category) {
+        super(category,"Server Manager", "server_manager", "Detects and executes features when you join and leave DF. Will literally brick every other feature if disabled.");
     }
 
     public static boolean isOnDiamondFire() { return currentServer.equals(RecognizedServers.DIAMONDFIRE); }

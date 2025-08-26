@@ -1,10 +1,12 @@
-package mia.miamod.features.impl.general;
+package mia.miamod.features.impl.internal;
 
 import mia.miamod.Mod;
 import mia.miamod.core.KeyBindCategories;
 import mia.miamod.core.KeyBindManager;
 import mia.miamod.core.MiaKeyBind;
+import mia.miamod.features.Categories;
 import mia.miamod.features.Feature;
+import mia.miamod.features.listeners.impl.AlwaysEnabled;
 import mia.miamod.features.listeners.impl.RegisterKeyBindEvent;
 import mia.miamod.features.listeners.impl.RenderHUD;
 import mia.miamod.features.listeners.impl.TickEvent;
@@ -15,11 +17,11 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import org.lwjgl.glfw.GLFW;
 
-public class ConfigScreenFeature extends Feature implements RegisterKeyBindEvent, TickEvent, RenderHUD {
+public class ConfigScreenFeature extends Feature implements RegisterKeyBindEvent, TickEvent, RenderHUD, AlwaysEnabled {
     private static MiaKeyBind openConfig;
     private static ConfigScreen configScreen;
-    public ConfigScreenFeature() {
-        super("conifg", "congifscreen", "description");
+    public ConfigScreenFeature(Categories category) {
+        super(category, "conifg screen", "congifscreen", "description");
         openConfig = new MiaKeyBind("Open Config", GLFW.GLFW_KEY_RIGHT_SHIFT, KeyBindCategories.GENERAL_CATEGORY);
     }
 

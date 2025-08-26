@@ -14,22 +14,22 @@ import java.util.List;
 
 public class RenderHelper {
     private final Tessellator tessellator;
-    private ArrayList<BufferDrawable> bufferDrawList;
-    private VertexConsumerProvider.Immediate vertexConsumerProvider;
+    //private ArrayList<BufferDrawable> bufferDrawList;
+    //private VertexConsumerProvider.Immediate vertexConsumerProvider;
     private int mouseX, mouseY;
     private float delta;
 
-    public RenderHelper(Tessellator tessellator, VertexConsumerProvider.Immediate vertexConsumerProvider, int mouseX, int mouseY, float delta) {
+    public RenderHelper(Tessellator tessellator, int mouseX, int mouseY, float delta) {
         this.tessellator = tessellator;
-        this.vertexConsumerProvider = vertexConsumerProvider;
+        //this.vertexConsumerProvider = vertexConsumerProvider;
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.delta = delta;
-        bufferDrawList = new ArrayList<>();
+        //bufferDrawList = new ArrayList<>();
     }
 
     //public void addDrawable(BufferDrawable object) { bufferDrawList.add(object); }
-    public void contextDraw(DrawContext context, BufferDrawable bufferDrawable) { bufferDrawable.contextDraw(vertexConsumerProvider, context, mouseX, mouseY); }
+    public void contextDraw(Matrix4f renderMatrix4f, DrawContext context, BufferDrawable bufferDrawable) { if (bufferDrawable != null) bufferDrawable.contextDraw(renderMatrix4f, context, mouseX, mouseY); }
 
     public static void setupStencil() {
         RenderSystem.stencilMask(GL11.GL_STENCIL_TEST);

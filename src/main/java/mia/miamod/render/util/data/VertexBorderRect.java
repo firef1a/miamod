@@ -5,6 +5,7 @@ import mia.miamod.render.util.RenderContextHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -14,8 +15,8 @@ public class VertexBorderRect extends VertexRect {
     public ARGB border;
     protected List<Quad> borderQuads;
 
-    public VertexBorderRect(MatrixStack matrixStack, float x, float y, float width, float height, float borderSize, float z, ARGB argb, ARGB border) {
-        super(matrixStack, x, y, width, height, z, argb);
+    public VertexBorderRect(Matrix4f matrix4f, float x, float y, float width, float height, float borderSize, float z, ARGB argb, ARGB border) {
+        super(matrix4f, x, y, width, height, z, argb);
         this.borderSize = borderSize;
         this.border = border;
         borderQuads = List.of(
@@ -50,27 +51,23 @@ public class VertexBorderRect extends VertexRect {
         );
     }
 
-    protected record Quad(Vector3f br, Vector3f tr, Vector3f tl, Vector3f bl) {
-        public void buildQuad(VertexConsumer vertices, MatrixStack.Entry entry, int color) {
-            vertices.vertex(entry, br).color(color);
-            vertices.vertex(entry, tr).color(color);
-            vertices.vertex(entry, tl).color(color);
-            vertices.vertex(entry, bl).color(color);
-        }
-    }
 
+
+    /*
     @Override
-    public void draw(VertexConsumerProvider.Immediate vertexConsumerProvider, DrawContext context, int mouseY, int mouseX) {
-        super.draw(vertexConsumerProvider, context, mouseY, mouseX);
-        drawBorder(vertexConsumerProvider, this.borderQuads, this.border);
+    public void draw(Matrix4f renderMatrix4f, DrawContext context, int mouseY, int mouseX) {
+        super.draw(renderMatrix4f, context, mouseY, mouseX);
+        drawBorder(renderMatrix4f, this.borderQuads, this.border);
     }
 
-    protected void drawBorder(VertexConsumerProvider vertexConsumerProvider, List<Quad> borderQuads, ARGB border) {
+    protected void drawBorder(Matrix4f renderMatrix4f, List<Quad> borderQuads, ARGB border) {
         VertexConsumer vertices = vertexConsumerProvider.getBuffer(RenderContextHelper.QUADS);
 
         int color = border.getARGB();
-        borderQuads.forEach(quad -> quad.buildQuad(vertices, entry, color));
+        borderQuads.forEach(quad -> quad.buildQuad(vertices, matrix4f, color));
     }
+
+     */
 
 
 }

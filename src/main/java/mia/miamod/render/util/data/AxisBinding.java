@@ -5,8 +5,10 @@ public enum AxisBinding {
     MIDDLE(0.5f),
     FULL(1f);
 
-    private double scale;
-    AxisBinding(double scale) {
+    private float scale;
+    AxisBinding(float scale) {
         this.scale = scale;
     }
+
+    public float getScale() { return scale; }
 }

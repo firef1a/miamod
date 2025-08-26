@@ -2,6 +2,7 @@ package mia.miamod;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import mia.miamod.config.ConfigStore;
 import mia.miamod.features.FeatureManager;
 import mia.miamod.features.listeners.impl.*;
 import mia.miamod.render.util.HudMatrixRegistry;
@@ -37,6 +38,7 @@ public class Mod implements ClientModInitializer {
 	public void onInitializeClient() {
 		System.setProperty("java.awt.headless", "false");
 
+		ConfigStore.load();
 		FeatureManager.init();
 		Mod.registerCallbacks();
 		HudMatrixRegistry.register();
@@ -46,32 +48,33 @@ public class Mod implements ClientModInitializer {
 	}
 
 	public static void shutdownClient() {
+		ConfigStore.save();
 		log("stopping client");
 	}
 
 	private static void registerCallbacks() {
-		ClientTickEvents.START_CLIENT_TICK.register(client -> FeatureManager.getFeaturesByIdentifier(TickEvent.class).forEach(feature -> { feature.tickR(tick); }));
-		ClientTickEvents.END_CLIENT_TICK.register(client -> FeatureManager.getFeaturesByIdentifier(TickEvent.class).forEach(feature -> { feature.tickF(tick); tick++; }));
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> FeatureManager.getFeaturesByIdentifier(ClientEventListener.class).forEach(ClientEventListener::clientInitialize));
-		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {FeatureManager.getFeaturesByIdentifier(ClientEventListener.class).forEach(ClientEventListener::clientShutdown); shutdownClient();});
-		ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipType, list) -> FeatureManager.getFeaturesByIdentifier(RenderTooltip.class).forEach(feature -> feature.tooltip(itemStack, tooltipContext, tooltipType, list))));
-		HudRenderCallback.EVENT.register((draw, tickCounter) -> FeatureManager.getFeaturesByIdentifier(RenderHUD.class).forEach(feature -> feature.renderHUD(draw, tickCounter)));
-		ClientPlayConnectionEvents.INIT.register((handler, client) -> FeatureManager.getFeaturesByIdentifier(ServerConnectionEventListener.class).forEach(feature -> feature.serverConnectInit(handler, client)));
-		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> FeatureManager.getFeaturesByIdentifier(ServerConnectionEventListener.class).forEach(feature -> feature.serverConnectJoin(handler, sender, client)));
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> FeatureManager.getFeaturesByIdentifier(ServerConnectionEventListener.class).forEach(feature -> feature.serverConnectDisconnect(handler, client)));
+		ClientTickEvents.START_CLIENT_TICK.register(client -> FeatureManager.implementFeatureListener(TickEvent.class, feature -> { feature.tickR(tick); }));
+		ClientTickEvents.END_CLIENT_TICK.register(client -> FeatureManager.implementFeatureListener(TickEvent.class, feature -> { feature.tickF(tick); tick++; }));
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> FeatureManager.implementFeatureListener(ClientEventListener.class, ClientEventListener::clientInitialize));
+		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {FeatureManager.implementFeatureListener(ClientEventListener.class, ClientEventListener::clientShutdown); shutdownClient();});
+		ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipType, list) -> FeatureManager.implementFeatureListener(RenderTooltip.class, feature -> feature.tooltip(itemStack, tooltipContext, tooltipType, list))));
+		HudRenderCallback.EVENT.register((draw, tickCounter) -> FeatureManager.implementFeatureListener(RenderHUD.class, feature -> feature.renderHUD(draw, tickCounter)));
+		ClientPlayConnectionEvents.INIT.register((handler, client) -> FeatureManager.implementFeatureListener(ServerConnectionEventListener.class, feature -> feature.serverConnectInit(handler, client)));
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> FeatureManager.implementFeatureListener(ServerConnectionEventListener.class, feature -> feature.serverConnectJoin(handler, sender, client)));
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> FeatureManager.implementFeatureListener(ServerConnectionEventListener.class, feature -> feature.serverConnectDisconnect(handler, client)));
 		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-			FeatureManager.getFeaturesByIdentifier(PlayerUseEventListener.class).forEach(feature -> feature.useBlockCallback(player, world, hand, hitResult));
+			FeatureManager.implementFeatureListener(PlayerUseEventListener.class, feature -> feature.useBlockCallback(player, world, hand, hitResult));
 			return ActionResult.PASS;
 		});
 		UseItemCallback.EVENT.register((player, world, hand) -> {
-			FeatureManager.getFeaturesByIdentifier(PlayerUseEventListener.class).forEach(feature -> feature.useItemCallback(player, world, hand));
+			FeatureManager.implementFeatureListener(PlayerUseEventListener.class, feature -> feature.useItemCallback(player, world, hand));
 			return ActionResult.PASS;
 		});
 		UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-			FeatureManager.getFeaturesByIdentifier(PlayerUseEventListener.class).forEach(feature -> feature.useEntityCallback(player, world, hand, entity, hitResult));
+			FeatureManager.implementFeatureListener(PlayerUseEventListener.class, feature -> feature.useEntityCallback(player, world, hand, entity, hitResult));
 			return ActionResult.PASS;
 		});
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> FeatureManager.getFeaturesByIdentifier(RegisterCommandListener.class).forEach(feature -> feature.register(dispatcher, registryAccess)));
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> FeatureManager.implementFeatureListener(RegisterCommandListener.class, feature -> feature.register(dispatcher, registryAccess)));
 	}
 	public static void sendCommand(String command) {
 		if (command.charAt(0) == '/') {

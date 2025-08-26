@@ -7,7 +7,7 @@
   "authors": ["meowara"],
   "contact": {},
   "license": "All-Rights-Reserved",
-  "icon": "assets/miamod/icon.png",
+  "icon": "assets/miamod/miku.png",
   "environment": "client",
   "entrypoints": {
     "client": [

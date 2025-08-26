@@ -9,7 +9,8 @@
     "requireAnnotations": true
   },
   "client": [
-    "network.MClientConnection",
-    "hud.MToastManager"
+    "hud.MTitleScreen",
+    "hud.MToastManager",
+    "network.MClientConnection"
   ]
 }

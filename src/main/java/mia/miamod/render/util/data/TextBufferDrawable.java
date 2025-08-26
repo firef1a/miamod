@@ -4,14 +4,12 @@ import mia.miamod.Mod;
 import mia.miamod.render.util.ARGB;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 
-public class TextPrimative extends BufferDrawable {
+public class TextBufferDrawable extends BufferDrawable {
     Text text;
     ARGB argb;
     boolean shadow;
@@ -19,8 +17,8 @@ public class TextPrimative extends BufferDrawable {
     int backgroundColor;
     int light;
 
-    public TextPrimative(MatrixStack matrices, Text text, float x, float y, float z, ARGB argb, boolean shadow) {
-        this.entry = matrices.peek();
+    public TextBufferDrawable(Matrix4f matrix4f, Text text, float x, float y, float z, ARGB argb, boolean shadow) {
+        this.matrix4f = matrix4f;
         this.text = text;
         this.x = x;
         this.y = y;
@@ -32,20 +30,20 @@ public class TextPrimative extends BufferDrawable {
         this.light = 15728880;
 
         this.width = Mod.MC.textRenderer.getWidth(text);
-        this.height = Mod.MC.textRenderer.fontHeight;
+        this.height = Mod.MC.textRenderer.fontHeight - 2;
         this.drawables = new ArrayList<>();
     }
     //new Matrix4f(entry.getPositionMatrix()).translate(topLeft()),
 
     @Override
-    protected void draw(VertexConsumerProvider.Immediate vertexConsumerProvider, DrawContext context, int mouseX, int mouseY) {
+    protected void draw(DrawContext context, int mouseX, int mouseY) {
         Mod.MC.textRenderer.draw(
                 text,
                 topLeft().x,topLeft().y,
                 argb.getARGB(),
                 shadow,
-                entry.getPositionMatrix(),
-                vertexConsumerProvider,
+                getFinalRenderMatrix4f(),
+                context.vertexConsumers,
                 TextRenderer.TextLayerType.SEE_THROUGH,
                 0,
                 15728880

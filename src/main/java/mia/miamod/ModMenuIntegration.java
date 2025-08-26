@@ -2,8 +2,7 @@ package mia.miamod;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import mia.miamod.features.impl.general.ConfigScreenFeature;
-import mia.miamod.render.screens.ConfigScreen;
+import mia.miamod.features.impl.internal.ConfigScreenFeature;
 
 public class ModMenuIntegration implements ModMenuApi {
     @Override

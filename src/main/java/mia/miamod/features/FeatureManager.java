@@ -1,8 +1,12 @@
 package mia.miamod.features;
 
-import mia.miamod.features.impl.general.ConfigScreenFeature;
-import mia.miamod.features.impl.general.merowwwaadfa;
+import mia.miamod.features.impl.general.AutoTip;
+import mia.miamod.features.impl.internal.ConfigScreenFeature;
+import mia.miamod.features.impl.development.ItemTagViewer;
+import mia.miamod.features.impl.internal.commands.CommandAliaser;
+import mia.miamod.features.impl.internal.commands.CommandScheduler;
 import mia.miamod.features.impl.internal.server.ServerManager;
+import mia.miamod.features.impl.support.AutoQueue;
 import mia.miamod.features.listeners.AbstractEventListener;
 
 import java.util.Collection;
@@ -27,13 +31,20 @@ public abstract class FeatureManager {
     }
 
     private static void initFeatures() {
-        add(new ConfigScreenFeature());
-        add(new merowwwaadfa());
+        add(new AutoTip(Categories.GENERAL));
+
+        add(new ItemTagViewer(Categories.DEV));
+
+        add(new AutoQueue(Categories.SUPPORT));
+
         initInternalFeatures();
     }
 
     private static void initInternalFeatures() {
-        add(new ServerManager());
+        add(new ServerManager(Categories.INTERNAL));
+        add(new ConfigScreenFeature(Categories.INTERNAL));
+        add(new CommandAliaser(Categories.INTERNAL));
+        add(new CommandScheduler(Categories.INTERNAL));
     }
 
     private static void add(Feature feature) {
@@ -45,7 +56,7 @@ public abstract class FeatureManager {
     public static HashMap<Class<? extends Feature>, Feature> getFeatureMap() { return features; }
 
     public static <T extends AbstractEventListener> List<T> getFeaturesByIdentifier(Class<T> listener) {
-       return getFeatures().stream().filter((listener::isInstance)).map((feature -> (T) feature)).collect(Collectors.toList());
+       return getFeatures().stream().filter((listener::isInstance)).map((feature -> (T) feature)).filter(feature -> ((Feature) feature).getEnabled()).collect(Collectors.toList());
     }
 
     public static <T extends AbstractEventListener> void implementFeatureListener(Class<T> listener, Consumer<T> consumer) {

@@ -9,13 +9,13 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VertexRect extends BufferDrawable {
     public ARGB argb;
-    protected float z;
 
-    public VertexRect(MatrixStack matrixStack, float x, float y, float width, float height, float z, ARGB argb) {
-        this.entry = matrixStack.peek();
+    public VertexRect(Matrix4f matrix4f, float x, float y, float width, float height, float z, ARGB argb) {
+        this.matrix4f = new Matrix4f(matrix4f);
         this.x = x;
         this.y = y;
         this.width = width;
@@ -25,18 +25,102 @@ public class VertexRect extends BufferDrawable {
         this.drawables = new ArrayList<>();
     }
 
-    public float getHeight() { return this.height; }
-    public float getWidth() { return this.width; }
-    public float getZ() { return this.z; }
+    protected record Quad(Vector3f br, Vector3f tr, Vector3f tl, Vector3f bl) {
+        public void buildQuad(VertexConsumer vertices, Matrix4f matrix4f, int color) {
+            vertices.vertex(matrix4f, br.x, br.y, br.z+1).color(color);
+            vertices.vertex(matrix4f, tr.x, tr.y, tr.z+1).color(color);
+            vertices.vertex(matrix4f, tl.x, tl.y, tl.z+1).color(color);
+            vertices.vertex(matrix4f, bl.x, bl.y, bl.z+1).color(color);
+        }
+    }
+
+    protected List<Quad> getBorderQuads(float borderSize) {
+        return List.of(
+                // right
+                new VertexBorderRect.Quad(
+                        bottomRight(),
+                        topRight(),
+                        topRight().add(-borderSize, borderSize, 0),
+                        bottomRight().sub(borderSize, borderSize, 0)
+                ),
+                // top
+                new VertexBorderRect.Quad(
+                        topRight().add(-borderSize, borderSize, 0),
+                        topRight(),
+                        topLeft(),
+                        topLeft().add(borderSize, borderSize, 0)
+                ),
+                // left
+                new VertexBorderRect.Quad(
+                        bottomLeft().add(borderSize, -borderSize, 0),
+                        topLeft().add(borderSize, borderSize, 0),
+                        topLeft(),
+                        bottomLeft()
+                ),
+                // bottom
+                new VertexBorderRect.Quad(
+                        bottomRight(),
+                        bottomRight().sub(borderSize, borderSize, 0),
+                        bottomLeft().add(borderSize, -borderSize, 0),
+                        bottomLeft()
+                )
+        );
+    }
+
+    protected void drawBorder(DrawContext context, ARGB border) {
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.peek().getPositionMatrix().mul(getFinalRenderMatrix4f());
+        internalBorder(context, border.getARGB());
+        //context.drawBorder((int)topLeft().x, (int)topLeft().y, (int)bottomRight().x, (int)bottomRight().y, argb.getARGB());
+        matrices.pop();
+        /*
+        VertexConsumerProvider vertexConsumerProvider = context.vertexConsumers;
+        VertexConsumer vertices = vertexConsumerProvider.getBuffer(RenderContextHelper.QUADS);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        int color = border.getARGB();
+        borderQuads.forEach(quad -> {
+            vertexB(buffer, getFinalRenderMatrix4f(), new Vector3f(quad.tl).add(0,0,0)).color(color);
+            vertexB(buffer, getFinalRenderMatrix4f(), new Vector3f(quad.bl).add(0,0,0)).color(color);
+            vertexB(buffer, getFinalRenderMatrix4f(), new Vector3f(quad.br).add(0,0,0)).color(color);
+            vertexB(buffer, getFinalRenderMatrix4f(), new Vector3f(quad.tr).add(0,0,0)).color(color);
+        });
+
+
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
+
+        //borderQuads.forEach(quad -> quad.buildQuad(vertices, getFinalRenderMatrix4f(), border.getARGB()));
+
+         */
+    }
+
+    private void internalBorder(DrawContext context, int color) {
+        int x = (int)topLeft().x;
+        int y = (int)topLeft().y;
+        int width = (int) getWidth();
+        int height = (int) getWidth();
+        int z = (int) this.z;
+
+        context.fill(x, y, x + width, y + 1, z, color);
+        context.fill(x, y + height - 1, x + width, y + height, z, color);
+        context.fill(x, y + 1, x + 1, y + height - 1, z, color);
+        context.fill(x + width - 1, y + 1, x + width, y + height - 1, z, color);
+    }
 
 
     @Override
-    protected void draw(VertexConsumerProvider.Immediate vertexConsumerProvider, DrawContext context, int mouseX, int mouseY) {
-       drawRect(vertexConsumerProvider, context, this.argb);
+    protected void draw(DrawContext context, int mouseX, int mouseY) {
+       drawRect(context, this.argb);
     }
 
-    protected void drawRect(VertexConsumerProvider vertexConsumerProvider, DrawContext context, ARGB argb) {
+    protected void drawRect(DrawContext context, ARGB argb) {
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.peek().getPositionMatrix().mul(getFinalRenderMatrix4f());
         context.fill((int)topLeft().x, (int)topLeft().y, (int)bottomRight().x, (int)bottomRight().y, (int) z, argb.getARGB());
+        matrices.pop();
         /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -61,7 +145,8 @@ public class VertexRect extends BufferDrawable {
         return vertexConsumer.vertex(matrix4f, vector3f.x, vector3f.y, vector3f.z);
     }
 
-    public boolean containsPoint(int x, int y, boolean inclusive) {
+    public boolean containsPoint(float x, float y, boolean inclusive) {
+        if (matrix4f == null || renderMatrix4f == null) return false;
         Vector3f normal = new Vector3f(0, 0, -1);
         Vector3f P = new Vector3f(x, y, z);
 
@@ -81,7 +166,7 @@ public class VertexRect extends BufferDrawable {
  */
     }
 
-    public static boolean isPointInQuad(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4, int x, int y) {
+    public static boolean isPointInQuad(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4, float x, float y) {
         // Check if the point is in the first triangle (v1, v2, v4)
         boolean inTriangle1 = isPointInTriangle(v1, v2, v4, x, y);
 
@@ -108,7 +193,7 @@ public class VertexRect extends BufferDrawable {
      * @param y  The y-coordinate of the point to check.
      * @return true if the point is inside the triangle, false otherwise.
      */
-    private static boolean isPointInTriangle(Vector3f v1, Vector3f v2, Vector3f v3, int x, int y) {
+    private static boolean isPointInTriangle(Vector3f v1, Vector3f v2, Vector3f v3, float x, float y) {
         // Calculate the signs for the point with respect to each edge of the triangle.
         float d1 = sign(x, y, v1.x, v1.y, v2.x, v2.y);
         float d2 = sign(x, y, v2.x, v2.y, v3.x, v3.y);
