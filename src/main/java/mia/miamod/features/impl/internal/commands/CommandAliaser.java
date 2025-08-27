@@ -27,7 +27,10 @@ public class CommandAliaser extends Feature implements RegisterCommandListener, 
     public void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
         List<SimpleAlias> simpleAliasList = List.of(
                 new SimpleAlias("mod vanish", "mv", "modv"),
-                new SimpleAlias("support queue", "queue")
+                new SimpleAlias("support queue", "queue"),
+                new SimpleAlias("item get debug_stick", "debug", "debug_stick"),
+                new SimpleAlias("item nbt", "nbt"),
+                new SimpleAlias("lagslayer", "ls")
         );
 
         List<GreedyAlias> greedyAliasList = List.of(

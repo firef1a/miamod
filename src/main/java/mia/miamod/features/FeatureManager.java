@@ -1,11 +1,15 @@
 package mia.miamod.features;
 
+import mia.miamod.features.impl.development.cpudisplay.CPUDisplay;
 import mia.miamod.features.impl.general.AutoTip;
+import mia.miamod.features.impl.general.DotSlashBypass;
+import mia.miamod.features.impl.general.title.JoinButton;
 import mia.miamod.features.impl.internal.ConfigScreenFeature;
 import mia.miamod.features.impl.development.ItemTagViewer;
 import mia.miamod.features.impl.internal.commands.CommandAliaser;
 import mia.miamod.features.impl.internal.commands.CommandScheduler;
 import mia.miamod.features.impl.internal.server.ServerManager;
+import mia.miamod.features.impl.moderation.reports.clickonreportsinchattoteleporttothem;
 import mia.miamod.features.impl.support.AutoQueue;
 import mia.miamod.features.listeners.AbstractEventListener;
 
@@ -31,11 +35,16 @@ public abstract class FeatureManager {
     }
 
     private static void initFeatures() {
+        add(new JoinButton(Categories.GENERAL));
         add(new AutoTip(Categories.GENERAL));
+        //add(new DotSlashBypass(Categories.GENERAL));
 
+        add(new CPUDisplay(Categories.DEV));
         add(new ItemTagViewer(Categories.DEV));
 
         add(new AutoQueue(Categories.SUPPORT));
+
+        add(new clickonreportsinchattoteleporttothem(Categories.MODERATION));
 
         initInternalFeatures();
     }

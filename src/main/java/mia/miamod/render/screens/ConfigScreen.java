@@ -10,7 +10,10 @@ import mia.miamod.features.Category;
 import mia.miamod.features.Feature;
 import mia.miamod.features.impl.internal.ConfigScreenFeature;
 import mia.miamod.features.parameters.ParameterDataField;
+import mia.miamod.features.parameters.impl.BooleanDataField;
+import mia.miamod.features.parameters.impl.EnumDataField;
 import mia.miamod.render.util.ARGB;
+import mia.miamod.render.util.EasingFunctions;
 import mia.miamod.render.util.RenderHelper;
 import mia.miamod.render.util.data.*;
 import mia.miamod.render.util.data.impl.VertexEnableButton;
@@ -25,11 +28,12 @@ import org.joml.*;
 
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class ConfigScreen extends Screen {
-    private static ConfigScreenStage configScreenStage;
+    private static AnimationStage configScreenStage;
     private float animation;
-    private static final float animationSpeed = 0.05F;//0.05F;
+    private static final float animationSpeed = 0.075F;//0.05F;
     private final Screen parent;
     private static final Matrix4f identityMatrix4f = new Matrix4f().identity();
 
@@ -40,7 +44,7 @@ public class ConfigScreen extends Screen {
     private ArrayList<CategoryButton> categoryButtons;
     private CategoryButton selectedCategoryButton;
 
-    private ArrayList<FeatureContainer> featureContainers;
+    private ArrayList<VertexButton> configButtons;
 
     float   centerX, centerY,
             width, height,
@@ -62,8 +66,8 @@ public class ConfigScreen extends Screen {
         openStage();
     }
 
-    private class CategoryButton extends VertexButton {
-        private Category category;
+    private static class CategoryButton extends VertexButton {
+        private final Category category;
 
         public CategoryButton(Category category, Matrix4f matrix4f, float x, float y, float width, float height, float z, ARGB argb, ARGB highlightARGB, ARGB enabledARGB, ARGB highlighEnabledARGB, Runnable callback) {
             super(matrix4f, x, y, width, height, z, argb, highlightARGB, enabledARGB, highlighEnabledARGB, callback);
@@ -73,17 +77,11 @@ public class ConfigScreen extends Screen {
         public Category getCategory() { return category; }
     }
 
-    private class FeatureButton extends VertexEnableButton {
-        private Feature feature;
+    private static class FeatureButton extends VertexEnableButton {
+        private final Feature feature;
         public FeatureButton(Feature feature, Matrix4f matrix4f, float x, float y, float width, float height, float z, Runnable callback) {
             super(matrix4f, x, y, width, height, z, callback);
             this.feature = feature;
-        }
-
-        @Override
-        protected void draw(DrawContext context, int mouseX, int mouseY) {
-            super.draw(context, mouseX, mouseY);
-            drawBorder(context, new ARGB(0x111417, 1F));
         }
 
         @Override
@@ -93,6 +91,35 @@ public class ConfigScreen extends Screen {
         public boolean getEnabled() { return this.feature.getEnabled(); }
 
         public Feature getFeature() { return feature; }
+    }
+
+    private class BooleanFieldButton extends VertexEnableButton {
+        private BooleanDataField booleanDataField;
+        public BooleanFieldButton(BooleanDataField booleanDataField, Matrix4f matrix4f, float x, float y, float width, float height, float z, Runnable callback) {
+            super(matrix4f, x, y, width, height, z, callback);
+            this.booleanDataField = booleanDataField;
+        }
+
+        @Override
+        public void setEnabled(boolean enabled) { this.booleanDataField.setValue(enabled); }
+
+        @Override
+        public boolean getEnabled() { return this.booleanDataField.getValue(); }
+
+        public BooleanDataField getBooleanDataField() { return booleanDataField; }
+    }
+
+    private class EnumParameterText extends TextBufferDrawable {
+        public EnumDataField parameter;
+        public EnumParameterText(EnumDataField parameter, Matrix4f matrix4f, Text text, float x, float y, float z, ARGB argb, boolean shadow) {
+            super(matrix4f, text, x, y, z, argb, shadow);
+            this.parameter = parameter;
+        }
+
+        @Override
+        protected Text getText() {
+            return this.parameter == null ? Text.empty() : Text.literal(this.parameter.getValue().name());
+        }
     }
 
     private class FeatureContainer extends VertexButton {
@@ -111,7 +138,6 @@ public class ConfigScreen extends Screen {
                     () -> {
                         if (!feature.getAlwaysEnabled()) {
                             feature.setEnabled(!feature.getEnabled());
-                            SoundManager.playUIButtonClick();
                         }
                     }
             );
@@ -119,6 +145,7 @@ public class ConfigScreen extends Screen {
             this.featureParameters = new ArrayList<>();
 
             int buttonMargin = 6;
+            float buttonSize = this.height - 6;
             float leftMargin = (this.height / 2) - ((this.height - buttonMargin) / 2) + 2;
 
             this.featureNameText = new TextBufferDrawable(
@@ -139,10 +166,11 @@ public class ConfigScreen extends Screen {
                 this.featureEnableButton = new FeatureButton(
                         feature,
                         matrix4f,
-                        -leftMargin,0,
-                        this.height - buttonMargin, this.height - buttonMargin,
+                        -leftMargin, 0,
+                        buttonSize, buttonSize,
                         this.z + 1,
-                        () -> {}
+                        () -> {
+                        }
                 );
                 featureEnableButton.setParentBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
                 featureEnableButton.setSelfBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
@@ -155,7 +183,7 @@ public class ConfigScreen extends Screen {
                     width,
                     0,
                     z,
-                    new ARGB(argb.getRGB(), argb.getAlpha()*0.75)
+                    new ARGB(this.argb.getRGB(), this.argb.getAlpha()*0.5)
             );
             featureParameterContainer.setParentBinding(new DrawableBinding(AxisBinding.NONE, AxisBinding.FULL));
             addDrawable(featureParameterContainer);
@@ -163,31 +191,103 @@ public class ConfigScreen extends Screen {
             float fieldY = 0;
             for (ParameterDataField<?> field : feature.getParameterDataFields()) {
                 if (field.getIdentifier().parameter().equals("enabled")) continue;
-                VertexRect fieldRect = new VertexRect(
-                        matrix4f,
-                        0,fieldY,
-                        width,
-                        this.height,
-                        featureParameterContainer.getZ()+1,
-                        new ARGB(argb.getRGB(), argb.getAlpha()*0.75)
-                );
+
+                ArrayList<BufferDrawable> fieldRenderChildren = new ArrayList<>();
+                Runnable clickCallback = null;
+
+                if (field instanceof BooleanDataField booleanDataField) {
+                    clickCallback = () -> { booleanDataField.setValue(!booleanDataField.getValue()); };
+                    BooleanFieldButton parameterEnableButton = new BooleanFieldButton(
+                            booleanDataField,
+                            matrix4f,
+                            -leftMargin, 0,
+                            buttonSize, buttonSize,
+                            featureParameterContainer.getZ()+2,
+                            () -> { }
+                    );
+                    parameterEnableButton.setParentBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    parameterEnableButton.setSelfBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    fieldRenderChildren.add(parameterEnableButton);
+
+                } else if (field instanceof EnumDataField<? extends Enum> enumDataField) {
+                    Enum<?> icon = enumDataField.getValue();
+                    Enum<?>[] enums = enumDataField.getDataClassType().getEnumConstants();
+
+                    clickCallback = () -> { enumDataField.setValue(enumDataField.getValue().ordinal() + 1 == enums.length ? enums[0] : enums[enumDataField.getValue().ordinal()+1]); };
+
+                    EnumParameterText enumText = new EnumParameterText(
+                            enumDataField,
+                            matrix4f,
+                            Text.literal(icon.name()),
+                            -leftMargin, 0,
+                            featureParameterContainer.getZ() + 2,
+                            new ARGB(ColorBank.WHITE, 1f),
+                            true
+                    );
+                    enumText.setParentBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    enumText.setSelfBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    fieldRenderChildren.add(enumText);
+                }
+
+
+                VertexRect fieldRect;
+                if (clickCallback != null) {
+                    fieldRect = new VertexButton(
+                            matrix4f,
+                            0, fieldY,
+                            width,
+                            this.height,
+                            featureParameterContainer.getZ()+1,
+                            this.argb,
+                            this.highlightARGB,
+                            this.enabledARGB,
+                            this.highlighEnabledARGB,
+                            clickCallback
+
+                    ) {
+                        @Override
+                        protected ARGB colorWrapper(ARGB color) {
+                            return new ARGB(color.getRGB(), color.getAlpha()*0.75);
+                        }
+                    };
+                    configButtons.add((VertexButton) fieldRect);
+                } else {
+                     fieldRect = new VertexRect(
+                            matrix4f,
+                            0, fieldY,
+                            width,
+                            this.height,
+                            featureParameterContainer.getZ()+1,
+                            new ARGB(argb().getRGB(), argb().getAlpha()*0.75)
+                    );
+                }
+
                 featureParameters.add(fieldRect);
                 featureParameterContainer.addDrawable(fieldRect);
 
                 TextBufferDrawable fieldText = new TextBufferDrawable(
                         matrix4f,
-                        Text.literal(field.getIdentifier().parameter() + ": " + field.getValue()),
-                        0,0,
+                        Text.literal(field.getIdentifier().parameter() + ": "),
+                        leftMargin,0,
                         fieldRect.getZ()+1,
                         new ARGB(ColorBank.WHITE, 1f),
                         true
                 );
+                fieldRenderChildren.addFirst(fieldText);
+
                 fieldText.setParentBinding(new DrawableBinding(AxisBinding.NONE, AxisBinding.MIDDLE));
                 fieldText.setSelfBinding(new DrawableBinding(AxisBinding.NONE, AxisBinding.MIDDLE));
                 fieldRect.addDrawable(fieldText);
 
+                fieldRenderChildren.forEach(fieldRect::addDrawable);
+
                 fieldY += fieldRect.getHeight();
             }
+        }
+
+        @Override
+        protected ARGB colorWrapper(ARGB color) {
+            return feature.getAlwaysEnabled() ? new ARGB(0x303a42,0.9) : color;
         }
 
         @Override
@@ -202,27 +302,21 @@ public class ConfigScreen extends Screen {
         protected void draw(DrawContext context, int mouseX, int mouseY) {
             super.draw(context, mouseX, mouseY);
             if (containsPoint((int) mouseX, (int) mouseY, true)) {
-                if (ConfigScreen.configScreenStage.equals(ConfigScreenStage.OPEN)) {
+                if (ConfigScreen.configScreenStage.equals(AnimationStage.OPEN)) {
                     context.drawTooltip(Mod.MC.textRenderer, Text.literal(feature.getDescription()), mouseX, mouseY);
                 }
             }
         }
     }
 
-    private float easeInOutCubic(float x) {
-        return x < 0.5 ? 4 * x * x * x : (float) (1 - Math.pow(-2 * x + 2, 3) / 2);
-    }
 
-    private float easeInOutCircular(float x) {
-        return (float) (x < 0.5 ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2 : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2);
-    }
 
     private Matrix4f animationMatrix(float time) {
         Matrix4f animationMatrix = new Matrix4f().identity();
-        animationMatrix.scale(easeInOutCubic(time), easeInOutCubic(time),1f);
+        animationMatrix.scale(EasingFunctions.easeInOutCubic(time), EasingFunctions.easeInOutCubic(time),1f);
         Vector3f axis = new Vector3f(-1, 1,0).normalize();
         float angle = (float) (Math.PI / 2);
-        animationMatrix.rotate(RotationAxis.of(axis).rotation((-angle) * (1 - easeInOutCubic(time))));
+        animationMatrix.rotate(RotationAxis.of(axis).rotation((-angle) * (1 - EasingFunctions.easeInOutCubic(time))));
         return animationMatrix;
     }
 
@@ -253,7 +347,7 @@ public class ConfigScreen extends Screen {
                 width,
                 topBarHeight,
                 screen.getZ()+1,
-                new ARGB(backgroundColor, 0.85));
+                new ARGB(backgroundColor, 0.80));
 
         sidebar = new VertexRect(
                 identityMatrix4f,
@@ -262,7 +356,7 @@ public class ConfigScreen extends Screen {
                 sidebarWidth,
                 height - (topBar.getHeight()),
                 screen.getZ()+1,
-                new ARGB(backgroundColor, 0.75));
+                new ARGB(backgroundColor, 0.70));
 
 
         main = new VertexRect(
@@ -272,7 +366,7 @@ public class ConfigScreen extends Screen {
                 width - (sidebar.getWidth()),
                 height - (topBar.getHeight()),
                 sidebar.getZ()+1,
-                new ARGB(backgroundColor, 0.55));
+                new ARGB(backgroundColor, 0.40));
 
         sidebar.addDrawable(main);
         topBar.addDrawable(sidebar);
@@ -307,12 +401,13 @@ public class ConfigScreen extends Screen {
                     y,
                     sidebar.getWidth(),
                     categoryHeight,
-                    sidebar.getZ()+1,
+                    sidebar.getZ() + 1,
                     new ARGB(0xcc8de0, 0.55F),
                     new ARGB(0xcc8de0, 0.7F),
                     new ARGB(0xdba9eb, 0.8F),
                     new ARGB(0xdba9eb, 0.9F),
-                    () -> {}
+                    () -> {
+                    }
             );
             sidebar.addDrawable(button);
             categoryButtons.add(button);
@@ -339,7 +434,8 @@ public class ConfigScreen extends Screen {
     }
 
     private void setMenuCategory(Category category) {
-        featureContainers = new ArrayList<>();
+        ArrayList<FeatureContainer> featureContainers = new ArrayList<>();
+        configButtons = new ArrayList<>();
         main.clearDrawables();
 
         VertexRect mainContainer = new VertexRect(
@@ -365,6 +461,8 @@ public class ConfigScreen extends Screen {
                     15,
                     mainContainer.getZ()+1
             );
+            configButtons.add(featureContainer);
+
             if (featureContainers.isEmpty()) {
                 mainContainer.addDrawable(featureContainer);
             } else {
@@ -430,14 +528,14 @@ public class ConfigScreen extends Screen {
         RenderHelper.clearStencil();
 
         // advance animation
-        if (configScreenStage.equals(ConfigScreenStage.OPENING)) {
+        if (configScreenStage.equals(AnimationStage.OPENING)) {
             animation = Math.min(1F, animation + animationSpeed);
-            if (animation >= 1F) configScreenStage = ConfigScreenStage.OPEN;
+            if (animation >= 1F) configScreenStage = AnimationStage.OPEN;
         }
-        if (configScreenStage.equals(ConfigScreenStage.CLOSING)) {
+        if (configScreenStage.equals(AnimationStage.CLOSING)) {
             animation = Math.max(0F, animation - animationSpeed);
             if (animation <= 0F) {
-                configScreenStage = ConfigScreenStage.CLOSED;
+                configScreenStage = AnimationStage.CLOSED;
                 if (parent != null) {
                     Mod.MC.setScreen((Screen) parent);
                     ConfigScreenFeature.clearConfigScreen();
@@ -468,10 +566,16 @@ public class ConfigScreen extends Screen {
                 }
             }
         }
-        if (featureContainers != null) {
-            for (FeatureContainer container : featureContainers) {
-                if (container != null) container.onClick(mx, my);
+        if (configButtons != null) {
+            configButtons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
+
+            for (VertexButton configButton : configButtons) {
+                if (configButton.onClick(mx, my)) {
+                    SoundManager.playUIButtonClick();
+                    break;
+                }
             }
+
         }
 
         return super.mouseReleased(mouseX, mouseY, button);
@@ -482,10 +586,10 @@ public class ConfigScreen extends Screen {
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
-    public void openStage() { configScreenStage = ConfigScreenStage.OPENING; }
-    public void closeStage() { configScreenStage = ConfigScreenStage.CLOSING; }
+    public void openStage() { configScreenStage = AnimationStage.OPENING; }
+    public void closeStage() { configScreenStage = AnimationStage.CLOSING; }
 
-    public ConfigScreenStage getStage() {
+    public AnimationStage getStage() {
         return configScreenStage;
     }
 

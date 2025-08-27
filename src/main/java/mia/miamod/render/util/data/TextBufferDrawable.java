@@ -29,7 +29,7 @@ public class TextBufferDrawable extends BufferDrawable {
         this.backgroundColor = 0;
         this.light = 15728880;
 
-        this.width = Mod.MC.textRenderer.getWidth(text);
+        this.width = getWidth();
         this.height = Mod.MC.textRenderer.fontHeight - 2;
         this.drawables = new ArrayList<>();
     }
@@ -38,7 +38,7 @@ public class TextBufferDrawable extends BufferDrawable {
     @Override
     protected void draw(DrawContext context, int mouseX, int mouseY) {
         Mod.MC.textRenderer.draw(
-                text,
+                getText(),
                 topLeft().x,topLeft().y,
                 argb.getARGB(),
                 shadow,
@@ -48,5 +48,14 @@ public class TextBufferDrawable extends BufferDrawable {
                 0,
                 15728880
         );
+    }
+
+    @Override
+    public float getWidth() {
+        return Mod.MC.textRenderer.getWidth(getText());
+    }
+
+    protected Text getText() {
+        return text;
     }
 }

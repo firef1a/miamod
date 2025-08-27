@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class AutoQueue extends Feature implements ServerConnectionEventListener {
 
     public AutoQueue(Categories category) {
-        super(category, "AutoQueue", "autoqueue", "Automatically runs /queue on join.");
+        super(category, "Auto /queue", "autoqueue", "Automatically runs /queue on join.");
     }
 
     @Override

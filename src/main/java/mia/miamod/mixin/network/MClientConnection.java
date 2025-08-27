@@ -44,6 +44,7 @@ public abstract class MClientConnection {
                 canceled = true;
             }
             Mod.warn(content.toString());
+            return new GameMessageS2CPacket(eventData.modified(), overlay);
         }
         return packet;
     }

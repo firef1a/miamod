@@ -20,7 +20,8 @@ public class ConfigStore {
 
     public static <T> T getParameter(ParameterDataField<T> parameterDataField, T defaultValue) {
         String id = parameterDataField.getIdentifier().getIdentifier();
-        return configData.has(id) ? parameterDataField.deserialize(configData.get(id)) : defaultValue;
+        T ret = configData.has(id) ? parameterDataField.deserialize(configData.get(id)) : defaultValue;
+        return ret == null ? defaultValue : ret;
     }
 
     public static <T extends Object> void saveParameter(ParameterDataField<T> parameterDataField) {

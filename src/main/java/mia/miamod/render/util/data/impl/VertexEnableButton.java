@@ -1,7 +1,9 @@
 package mia.miamod.render.util.data.impl;
 
+import mia.miamod.ColorBank;
 import mia.miamod.render.util.ARGB;
 import mia.miamod.render.util.data.VertexButton;
+import net.minecraft.client.gui.DrawContext;
 import org.joml.Matrix4f;
 
 public class VertexEnableButton extends VertexButton {
@@ -21,5 +23,16 @@ public class VertexEnableButton extends VertexButton {
                 enabledHighlightARGB,
                 callback
         );
+    }
+
+    @Override
+    protected void draw(DrawContext context, int mouseX, int mouseY) {
+        super.draw(context, mouseX, mouseY);
+        drawBorder(context, new ARGB(ColorBank.BLACK, 1F));
+    }
+
+    @Override
+    public boolean containsPoint(float x, float y, boolean inclusive) {
+        return parent == null ? super.containsPoint(x, y, inclusive) : parent.containsPoint(x, y, inclusive);
     }
 }

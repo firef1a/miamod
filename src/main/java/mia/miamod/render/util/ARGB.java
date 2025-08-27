@@ -35,6 +35,8 @@ public class ARGB {
         return (alphaInt << 24) | (red << 16) | (green << 8) | blue;
     }
 
+    public ARGB mul(int rgb, double alpha) { return new ARGB(getRGB() * rgb, getAlpha()*alpha); }
+
     public static int getRed(int color) {
         return (color >> 16) & 0xFF;
     }

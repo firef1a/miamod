@@ -9,8 +9,9 @@ import org.joml.Matrix4f;
 
 public class VertexButton extends VertexRect {
     private boolean enabled;
-    private ARGB enabledARGB, highlighEnabledARGB;
-    protected ARGB highlightARGB;
+    public final ARGB enabledARGB;
+    public final ARGB highlighEnabledARGB;
+    public final ARGB highlightARGB;
     protected Runnable callback;
 
     public VertexButton(Matrix4f matrix4f, float x, float y, float width, float height, float z, ARGB argb, ARGB highlightARGB, ARGB enabledARGB, ARGB highlighEnabledARGB, Runnable callback) {
@@ -21,17 +22,27 @@ public class VertexButton extends VertexRect {
         this.callback = callback;
     }
 
+    public ARGB enabledARGB() { return colorWrapper(this.enabledARGB); }
+    public ARGB highlightARGB() { return colorWrapper(this.highlightARGB); }
+    public ARGB highlighEnabledARGB() { return colorWrapper(this.highlighEnabledARGB); }
+
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
     public boolean getEnabled() { return this.enabled; }
 
     public void setCallback(Runnable callback) { this.callback = callback; }
 
-    public void onClick(int mouseX, int mouseY) { if (containsPoint(mouseX, mouseY, true)) callback.run(); }
+    public boolean onClick(int mouseX, int mouseY) {
+        if (containsPoint(mouseX, mouseY, true)) {
+            callback.run();
+            return true;
+        }
+        return false;
+    }
 
     @Override
     protected void draw(DrawContext context, int mouseX, int mouseY) {
         boolean contains = containsPoint(mouseX, mouseY, true);
-        drawRect(context, contains ? (getEnabled() ? this.highlighEnabledARGB : this.highlightARGB) : (getEnabled() ? this.enabledARGB : this.argb));
+        drawRect(context, contains ? (getEnabled() ? this.highlighEnabledARGB() : this.highlightARGB()) : (getEnabled() ? this.enabledARGB() : this.argb()));
     }
 
 }

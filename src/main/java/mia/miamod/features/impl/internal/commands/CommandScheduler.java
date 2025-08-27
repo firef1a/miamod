@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.command.CommandRegistryAccess;
 
+import net.minecraft.client.gui.screen.Screen;
 import java.util.ArrayList;
 
 public class CommandScheduler extends Feature implements TickEvent, ServerConnectionEventListener, AlwaysEnabled {
@@ -37,9 +38,9 @@ public class CommandScheduler extends Feature implements TickEvent, ServerConnec
         long currentTimestamp = System.currentTimeMillis();
         if (nextTimestamp > currentTimestamp) return;
 
-        if (!scheduledCommands.isEmpty()) {
+        if (!scheduledCommands.isEmpty() && Mod.MC.getNetworkHandler() != null && Mod.MC.world != null && Mod.MC.player != null) {
             ScheduledCommand scheduledCommand = scheduledCommands.removeFirst();
-            Mod.sendCommand(scheduledCommand.command());
+            Mod.sendCommand("/" + scheduledCommand.command());
             nextTimestamp = currentTimestamp + scheduledCommand.getDelay();
         }
     }
@@ -56,7 +57,7 @@ public class CommandScheduler extends Feature implements TickEvent, ServerConnec
 
     @Override
     public void serverConnectJoin(ClientPlayNetworkHandler networkHandler, PacketSender sender, MinecraftClient minecraftServer) {
-        nextTimestamp = System.currentTimeMillis() + 2000L;
+
     }
 
     @Override
@@ -66,7 +67,7 @@ public class CommandScheduler extends Feature implements TickEvent, ServerConnec
 
     @Override
     public void DFConnectJoin(ClientPlayNetworkHandler networkHandler) {
-
+        nextTimestamp = System.currentTimeMillis() + 250L;
     }
 
     @Override

@@ -11,7 +11,7 @@ import mia.miamod.features.listeners.impl.RegisterKeyBindEvent;
 import mia.miamod.features.listeners.impl.RenderHUD;
 import mia.miamod.features.listeners.impl.TickEvent;
 import mia.miamod.render.screens.ConfigScreen;
-import mia.miamod.render.screens.ConfigScreenStage;
+import mia.miamod.render.screens.AnimationStage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
@@ -55,7 +55,7 @@ public class ConfigScreenFeature extends Feature implements RegisterKeyBindEvent
     @Override
     public void renderHUD(DrawContext context, RenderTickCounter tickCounter) {
         if (configScreen == null) return;
-        if (configScreen.getStage().equals(ConfigScreenStage.CLOSING)) configScreen.render(context, 0, 0, tickCounter.getTickDelta(false));
-        if (configScreen.getStage().equals(ConfigScreenStage.CLOSED)) clearConfigScreen();
+        if (configScreen.getStage().equals(AnimationStage.CLOSING)) configScreen.render(context, 0, 0, tickCounter.getTickDelta(false));
+        if (configScreen.getStage().equals(AnimationStage.CLOSED)) clearConfigScreen();
     }
 }

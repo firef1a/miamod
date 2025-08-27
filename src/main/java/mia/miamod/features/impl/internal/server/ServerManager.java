@@ -26,6 +26,7 @@ public class ServerManager extends Feature implements ServerConnectionEventListe
         super(category,"Server Manager", "server_manager", "Detects and executes features when you join and leave DF. Will literally brick every other feature if disabled.");
     }
 
+    public static boolean isNotOnDiamondFire() { return !isOnDiamondFire(); }
     public static boolean isOnDiamondFire() { return currentServer.equals(RecognizedServers.DIAMONDFIRE); }
 
     @Override
@@ -38,7 +39,8 @@ public class ServerManager extends Feature implements ServerConnectionEventListe
         if (server.equals(RecognizedServers.DIAMONDFIRE) && ServerManager.connectionStatus.equals(ServerConnectionStatus.CONNECTING)) {
             connectionStatus = ServerConnectionStatus.CONNECTED;
             currentServer = RecognizedServers.DIAMONDFIRE;
-            FeatureManager.getFeaturesByIdentifier(ServerConnectionEventListener.class).forEach(feature -> feature.DFConnectJoin(networkHandler));
+            Mod.warn("Joined DiamondFire");
+            FeatureManager.implementFeatureListener(ServerConnectionEventListener.class, feature -> feature.DFConnectJoin(networkHandler));
         }
     }
 
@@ -49,7 +51,7 @@ public class ServerManager extends Feature implements ServerConnectionEventListe
         if (server.equals(RecognizedServers.DIAMONDFIRE)) {
             connectionStatus = ServerConnectionStatus.NONE;
             currentServer = RecognizedServers.NONE;
-            FeatureManager.getFeaturesByIdentifier(ServerConnectionEventListener.class).forEach(feature -> feature.DFConnectDisconnect(networkHandler));
+            FeatureManager.implementFeatureListener(ServerConnectionEventListener.class, feature -> feature.DFConnectDisconnect(networkHandler));
         }
     }
 
@@ -75,13 +77,12 @@ public class ServerManager extends Feature implements ServerConnectionEventListe
 
     public static RecognizedServers recognizeServer(ServerInfo server) {
         String serverAddress = server.address;
-
-        Pattern[] allowedPatterns = {
-                Pattern.compile("mcdiamondfire\\.(?:com|net)$"),
-                Pattern.compile("54\\.39\\.29\\.75$"),
-                Pattern.compile("[a-zA-Z0-9-_]{3,30}\\.diamondfire.games$")
-        };
-        for (Pattern pattern : allowedPatterns) if (pattern.matcher(serverAddress).find()) return RecognizedServers.DIAMONDFIRE;
+        if (
+                serverAddress.contains("mcdiamondfire.com") ||
+                        serverAddress.contains("mcdiamondfire.net") ||
+                        serverAddress.contains("54.39.29.75") ||
+                        serverAddress.contains("diamondfire.games")
+        ) return RecognizedServers.DIAMONDFIRE;
         return RecognizedServers.NONE;
     }
 }
