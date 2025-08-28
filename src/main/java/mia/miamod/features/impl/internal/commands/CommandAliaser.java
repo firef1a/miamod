@@ -15,7 +15,7 @@ import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBl
 
 import java.util.List;
 
-public class CommandAliaser extends Feature implements RegisterCommandListener, AlwaysEnabled {
+public final class CommandAliaser extends Feature implements RegisterCommandListener, AlwaysEnabled {
     public CommandAliaser(Categories category) {
         super(category, "cmd aliser", "cmdaliser", "registers shortcuts for common commands");
     }

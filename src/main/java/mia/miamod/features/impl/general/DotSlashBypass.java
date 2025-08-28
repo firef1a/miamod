@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 
-public class DotSlashBypass extends Feature implements PacketListener {
+public final class DotSlashBypass extends Feature implements PacketListener {
     public DotSlashBypass(Categories category) {
         super(category, "Dot Slash Bypass", "dotslash", "Automatically removes the . before / and @ commands");
     }

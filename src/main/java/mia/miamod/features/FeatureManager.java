@@ -2,13 +2,17 @@ package mia.miamod.features;
 
 import mia.miamod.features.impl.development.cpudisplay.CPUDisplay;
 import mia.miamod.features.impl.general.AutoTip;
-import mia.miamod.features.impl.general.DotSlashBypass;
+import mia.miamod.features.impl.general.chat.BetterSCTags;
+import mia.miamod.features.impl.general.chat.MessageChatHudFeature;
 import mia.miamod.features.impl.general.title.JoinButton;
 import mia.miamod.features.impl.internal.ConfigScreenFeature;
 import mia.miamod.features.impl.development.ItemTagViewer;
 import mia.miamod.features.impl.internal.commands.CommandAliaser;
 import mia.miamod.features.impl.internal.commands.CommandScheduler;
+import mia.miamod.features.impl.internal.mode.LocationAPI;
 import mia.miamod.features.impl.internal.server.ServerManager;
+import mia.miamod.features.impl.moderation.BetterVanishMSG;
+import mia.miamod.features.impl.internal.staff.VanishTracker;
 import mia.miamod.features.impl.moderation.reports.clickonreportsinchattoteleporttothem;
 import mia.miamod.features.impl.support.AutoQueue;
 import mia.miamod.features.listeners.AbstractEventListener;
@@ -37,6 +41,8 @@ public abstract class FeatureManager {
     private static void initFeatures() {
         add(new JoinButton(Categories.GENERAL));
         add(new AutoTip(Categories.GENERAL));
+        add(new BetterSCTags(Categories.GENERAL));
+        add(new MessageChatHudFeature(Categories.GENERAL));
         //add(new DotSlashBypass(Categories.GENERAL));
 
         add(new CPUDisplay(Categories.DEV));
@@ -44,6 +50,7 @@ public abstract class FeatureManager {
 
         add(new AutoQueue(Categories.SUPPORT));
 
+        add(new BetterVanishMSG(Categories.MODERATION));
         add(new clickonreportsinchattoteleporttothem(Categories.MODERATION));
 
         initInternalFeatures();
@@ -54,13 +61,17 @@ public abstract class FeatureManager {
         add(new ConfigScreenFeature(Categories.INTERNAL));
         add(new CommandAliaser(Categories.INTERNAL));
         add(new CommandScheduler(Categories.INTERNAL));
+        add(new VanishTracker(Categories.INTERNAL));
+        add(new LocationAPI(Categories.INTERNAL));
     }
 
     private static void add(Feature feature) {
         features.put(feature.getClass(), feature);
     }
 
-    public static Feature getFeature(Class<? extends Feature> identifier) { return features.get(identifier); }
+
+    public static <T extends Feature> boolean hasFeature(Class<T> identifier) { return features.containsKey(identifier); }
+    public static <T extends Feature> T getFeature(Class<T> identifier) { return (T) features.get(identifier); }
     public static Collection<Feature> getFeatures() { return getFeatureMap().values(); }
     public static HashMap<Class<? extends Feature>, Feature> getFeatureMap() { return features; }
 

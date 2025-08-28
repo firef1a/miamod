@@ -6,8 +6,8 @@ import mia.miamod.features.parameters.ParameterDataField;
 import mia.miamod.features.parameters.ParameterIdentifier;
 
 public class DoubleDataField extends ParameterDataField<Double> {
-    public DoubleDataField(String name, ParameterIdentifier identifier, Double defaultValue) {
-        super(name, identifier, defaultValue);
+    public DoubleDataField(String name, ParameterIdentifier identifier, Double defaultValue, boolean isConfig) {
+        super(name, identifier, defaultValue, isConfig);
     }
 
     @Override

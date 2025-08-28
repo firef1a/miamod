@@ -11,4 +11,6 @@ public abstract class ColorBank {
     public static final int MC_RED = 0xff5555;
     public static final int MC_DARK_RED = 0xff5555;
     public static final int MC_DARK_GREEN = 0x00AA00;
+
+    public static final int MC_GREEN = 0x55ff55;
 }

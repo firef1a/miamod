@@ -32,7 +32,7 @@ public class Mod implements ClientModInitializer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final MinecraftClient MC = MinecraftClient.getInstance();
 	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	private static int tick = 0;
+	public static int tick = 0;
 
 	@Override
 	public void onInitializeClient() {
@@ -54,7 +54,10 @@ public class Mod implements ClientModInitializer {
 
 	private static void registerCallbacks() {
 		ClientTickEvents.START_CLIENT_TICK.register(client -> FeatureManager.implementFeatureListener(TickEvent.class, feature -> { feature.tickR(tick); }));
-		ClientTickEvents.END_CLIENT_TICK.register(client -> FeatureManager.implementFeatureListener(TickEvent.class, feature -> { feature.tickF(tick); tick++; }));
+		ClientTickEvents.END_CLIENT_TICK.register(client -> FeatureManager.implementFeatureListener(TickEvent.class, feature -> {
+			tick++;
+			feature.tickF(tick);
+		}));
 		ClientLifecycleEvents.CLIENT_STARTED.register(client -> FeatureManager.implementFeatureListener(ClientEventListener.class, ClientEventListener::clientInitialize));
 		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {FeatureManager.implementFeatureListener(ClientEventListener.class, ClientEventListener::clientShutdown); shutdownClient();});
 		ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipType, list) -> FeatureManager.implementFeatureListener(RenderTooltip.class, feature -> feature.tooltip(itemStack, tooltipContext, tooltipType, list))));

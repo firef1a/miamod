@@ -18,7 +18,7 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.client.gui.screen.Screen;
 import java.util.ArrayList;
 
-public class CommandScheduler extends Feature implements TickEvent, ServerConnectionEventListener, AlwaysEnabled {
+public final class CommandScheduler extends Feature implements TickEvent, ServerConnectionEventListener, AlwaysEnabled {
     private static ArrayList<ScheduledCommand> scheduledCommands;
     private static long nextTimestamp;
     public CommandScheduler(Categories category) {

@@ -6,8 +6,8 @@ import mia.miamod.features.parameters.ParameterDataField;
 import mia.miamod.features.parameters.ParameterIdentifier;
 
 public class StringDataField extends ParameterDataField<String> {
-    public StringDataField(String name, ParameterIdentifier identifier, String defaultValue) {
-        super(name, identifier, defaultValue);
+    public StringDataField(String name, ParameterIdentifier identifier, String defaultValue, boolean isConfig) {
+        super(name, identifier, defaultValue, isConfig);
     }
 
     @Override

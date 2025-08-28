@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import org.lwjgl.glfw.GLFW;
 
-public class ConfigScreenFeature extends Feature implements RegisterKeyBindEvent, TickEvent, RenderHUD, AlwaysEnabled {
+public final class ConfigScreenFeature extends Feature implements RegisterKeyBindEvent, TickEvent, RenderHUD, AlwaysEnabled {
     private static MiaKeyBind openConfig;
     private static ConfigScreen configScreen;
     public ConfigScreenFeature(Categories category) {

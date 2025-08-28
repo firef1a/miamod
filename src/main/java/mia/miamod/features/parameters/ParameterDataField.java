@@ -14,13 +14,15 @@ public abstract class ParameterDataField<T> {
     protected final ParameterIdentifier identifier;
     protected final Class<T> classType;
     protected T dataField;
+    protected boolean isConfig;
 
     @SuppressWarnings("unchecked")
-    public ParameterDataField(String name, ParameterIdentifier identifier, T defaultValue) {
+    public ParameterDataField(String name, ParameterIdentifier identifier, T defaultValue, boolean isConfig) {
         this.name = name;
         this.identifier = identifier;
         this.classType = (Class<T>) defaultValue.getClass();
         this.dataField = ConfigStore.getParameter(this, defaultValue);
+        this.isConfig = isConfig;
         identifier.feature().addParameter(this);
     }
 
@@ -34,4 +36,5 @@ public abstract class ParameterDataField<T> {
     public String getName() { return this.name; }
     public Class<T> getDataClassType() { return this.classType; }
     public ParameterIdentifier getIdentifier() { return this.identifier; }
+    public boolean isConfig() { return isConfig; }
 }

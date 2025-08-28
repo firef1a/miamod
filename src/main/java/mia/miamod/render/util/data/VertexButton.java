@@ -1,10 +1,7 @@
 package mia.miamod.render.util.data;
 
-import mia.miamod.features.Category;
 import mia.miamod.render.util.ARGB;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
 
 public class VertexButton extends VertexRect {
@@ -31,12 +28,38 @@ public class VertexButton extends VertexRect {
 
     public void setCallback(Runnable callback) { this.callback = callback; }
 
-    public boolean onClick(int mouseX, int mouseY) {
+    public boolean mouseDownEvent(int mouseX, int mouseY) {
         if (containsPoint(mouseX, mouseY, true)) {
-            callback.run();
-            return true;
+            return onMouseDown(mouseX, mouseY);
         }
         return false;
+    }
+
+    public boolean mouseUpEvent(int mouseX, int mouseY) {
+        if (containsPoint(mouseX, mouseY, true)) {
+            return onMouseUp(mouseX, mouseY);
+        }
+        return false;
+    }
+
+    public boolean mouseDragEvent(int mouseX, int mouseY) {
+        if (containsPoint(mouseX, mouseY, true)) {
+            return onMouseDrag(mouseX, mouseY);
+        }
+        return false;
+    }
+
+    protected boolean onMouseDown(int mouseX, int mouseY) {
+        callback.run();
+        return true;
+    }
+
+    protected boolean onMouseUp(int mouseX, int mouseY) {
+        return true;
+    }
+
+    protected boolean onMouseDrag(int mouseX, int mouseY) {
+        return true;
     }
 
     @Override

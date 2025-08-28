@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("rawtypes")
 public class EnumDataField<T extends Enum> extends ParameterDataField<T> {
-    public EnumDataField(String name, ParameterIdentifier identifier, T defaultValue) {
-        super(name, identifier, defaultValue);
+    public EnumDataField(String name, ParameterIdentifier identifier, T defaultValue, boolean isConfig) {
+        super(name, identifier, defaultValue, isConfig);
     }
 
     @Override

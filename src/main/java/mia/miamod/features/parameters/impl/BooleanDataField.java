@@ -7,8 +7,8 @@ import mia.miamod.features.parameters.ParameterDataField;
 import mia.miamod.features.parameters.ParameterIdentifier;
 
 public class BooleanDataField extends ParameterDataField<Boolean> {
-    public BooleanDataField(String name, ParameterIdentifier identifier, Boolean defaultValue) {
-        super(name, identifier, defaultValue);
+    public BooleanDataField(String name, ParameterIdentifier identifier, Boolean defaultValue, boolean isConfig) {
+        super(name, identifier, defaultValue, isConfig);
     }
 
     @Override

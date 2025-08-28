@@ -43,7 +43,7 @@ public class CPUDisplay extends Feature implements RenderHUD, PacketListener {
     public CPUDisplay(Categories category) {
         super(category, "CPU Display", "cpuwheel", "its a wheel");
         animation = 0;
-        colorStyleEnumDataField = new EnumDataField<>("Color Style", ParameterIdentifier.of(this, "color_style"), ColorStyle.SOLID);
+        colorStyleEnumDataField = new EnumDataField<>("Color Style", ParameterIdentifier.of(this, "color_style"), ColorStyle.SOLID, true);
     }
 
     private enum ColorStyle {

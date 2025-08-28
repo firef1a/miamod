@@ -19,7 +19,7 @@ public abstract class Feature {
         this.description = description;
         this.parameterDataFields = new ArrayList<>();
 
-        enabledParameter = new BooleanDataField("Enabled", ParameterIdentifier.of(this, "enabled"), true);
+        enabledParameter = new BooleanDataField("Enabled", ParameterIdentifier.of(this, "enabled"), true, false);
 
         category.getCategory().addFeature(this);
     }

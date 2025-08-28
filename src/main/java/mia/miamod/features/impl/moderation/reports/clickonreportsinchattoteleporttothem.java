@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class clickonreportsinchattoteleporttothem extends Feature implements ChatEventListener, RegisterCommandListener {
+public final class clickonreportsinchattoteleporttothem extends Feature implements ChatEventListener, RegisterCommandListener {
 
     public clickonreportsinchattoteleporttothem(Categories category) {
         super(category, "clickonreportsinchattoteleporttothem", "clickonreportsinchattoteleporttothem", "title");
@@ -36,7 +36,7 @@ public class clickonreportsinchattoteleporttothem extends Feature implements Cha
     @Override
     public ModifiableEventResult<Text> chatEvent(ModifiableEventData<Text> message, CallbackInfo ci) {
         String base = message.base().getString();
-        Matcher matcher = Pattern.compile("^! Incoming Report \\(([A-Za-z0-9_]{3,16})\\)\\n\\|  Offender: ([A-Za-z0-9_]{3,16})\\n\\|  Offense: (.*)\\n\\|  Location: (Private |)(.*) (\\d*) Mode.*$").matcher(base);
+        Matcher matcher = Pattern.compile("^! Incoming Report \\(([A-Za-z0-9_]{3,16})\\)\\n\\|  Offender: ([A-Za-z0-9_]{3,16})\\n\\|  Offense: (.*)\\n\\|  Location: (Private |)(.*) (\\d*) (?:Mode|Spawn|Existing).*$").matcher(base);
         if (matcher.find()) {
             String reporter = matcher.group(1);
             String offender = matcher.group(2);

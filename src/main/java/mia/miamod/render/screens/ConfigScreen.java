@@ -12,6 +12,8 @@ import mia.miamod.features.impl.internal.ConfigScreenFeature;
 import mia.miamod.features.parameters.ParameterDataField;
 import mia.miamod.features.parameters.impl.BooleanDataField;
 import mia.miamod.features.parameters.impl.EnumDataField;
+import mia.miamod.features.parameters.impl.IntegerSliderDataField;
+import mia.miamod.features.parameters.impl.InternalDataField;
 import mia.miamod.render.util.ARGB;
 import mia.miamod.render.util.EasingFunctions;
 import mia.miamod.render.util.RenderHelper;
@@ -190,13 +192,13 @@ public class ConfigScreen extends Screen {
 
             float fieldY = 0;
             for (ParameterDataField<?> field : feature.getParameterDataFields()) {
-                if (field.getIdentifier().parameter().equals("enabled")) continue;
+                if (!field.isConfig()) continue;
 
                 ArrayList<BufferDrawable> fieldRenderChildren = new ArrayList<>();
                 Runnable clickCallback = null;
 
                 if (field instanceof BooleanDataField booleanDataField) {
-                    clickCallback = () -> { booleanDataField.setValue(!booleanDataField.getValue()); };
+                    if (!(booleanDataField instanceof InternalDataField)) clickCallback = () -> { booleanDataField.setValue(!booleanDataField.getValue()); };
                     BooleanFieldButton parameterEnableButton = new BooleanFieldButton(
                             booleanDataField,
                             matrix4f,
@@ -227,6 +229,8 @@ public class ConfigScreen extends Screen {
                     enumText.setParentBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
                     enumText.setSelfBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
                     fieldRenderChildren.add(enumText);
+                } else if (field instanceof IntegerSliderDataField integerSliderDataField) {
+
                 }
 
 
@@ -287,7 +291,8 @@ public class ConfigScreen extends Screen {
 
         @Override
         protected ARGB colorWrapper(ARGB color) {
-            return feature.getAlwaysEnabled() ? new ARGB(0x303a42,0.9) : color;
+            return color;
+            //return feature.getAlwaysEnabled() ? new ARGB(0x303a42,0.9) : color;
         }
 
         @Override
@@ -324,6 +329,7 @@ public class ConfigScreen extends Screen {
 
     private void initBuffer() {
         // render stuff
+        configButtons = new ArrayList<>();
 
         int topBarHeight = 20;
         int sidebarWidth = 100;
@@ -406,9 +412,19 @@ public class ConfigScreen extends Screen {
                     new ARGB(0xcc8de0, 0.7F),
                     new ARGB(0xdba9eb, 0.8F),
                     new ARGB(0xdba9eb, 0.9F),
-                    () -> {
-                    }
-            );
+                    () -> { }
+            ) {
+                @Override
+                protected boolean onMouseDown(int mouseX, int mouseY) {
+                    if (this.getEnabled()) return false;
+                    categoryButtons.forEach(each -> each.setEnabled(false));
+                    selectedCategoryButton.setEnabled(false);
+                    selectedCategoryButton = this;
+                    this.setEnabled(true);
+                    setMenuCategory(this.getCategory());
+                    return true;
+                }
+            };
             sidebar.addDrawable(button);
             categoryButtons.add(button);
             if (i == 0) {
@@ -545,6 +561,22 @@ public class ConfigScreen extends Screen {
     }
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        int mx = (int) mouseX;
+        int my = (int) mouseY;
+        if (configButtons != null) {
+            configButtons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
+
+            ArrayList<VertexButton> buttons = new ArrayList<>();
+            buttons.addAll(configButtons);
+            buttons.addAll(categoryButtons);
+            for (VertexButton configButton : buttons) {
+                if (configButton.mouseDownEvent(mx, my)) {
+                    SoundManager.playUIButtonClick();
+                    break;
+                }
+            }
+
+        }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -552,37 +584,39 @@ public class ConfigScreen extends Screen {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         int mx = (int) mouseX;
         int my = (int) mouseY;
-        if (categoryButtons != null) {
-            for (CategoryButton categoryButton : categoryButtons) {
-                if (categoryButton.getEnabled()) continue;
-                if (categoryButton.containsPoint(mx, my, true)) {
-                    selectedCategoryButton.setEnabled(false);
-                    selectedCategoryButton = categoryButton;
-                    categoryButton.setEnabled(true);
-                    setMenuCategory(categoryButton.getCategory());
-                    SoundManager.playUIButtonClick();
-                } else {
-                    categoryButton.setEnabled(false);
-                }
-            }
-        }
         if (configButtons != null) {
             configButtons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
 
-            for (VertexButton configButton : configButtons) {
-                if (configButton.onClick(mx, my)) {
-                    SoundManager.playUIButtonClick();
+            ArrayList<VertexButton> buttons = new ArrayList<>();
+            buttons.addAll(configButtons);
+            buttons.addAll(categoryButtons);
+            for (VertexButton configButton : buttons) {
+                if (configButton.mouseUpEvent(mx, my)) {
                     break;
                 }
             }
 
         }
-
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        int mx = (int) mouseX;
+        int my = (int) mouseY;
+        if (configButtons != null) {
+            configButtons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
+
+            ArrayList<VertexButton> buttons = new ArrayList<>();
+            buttons.addAll(configButtons);
+            buttons.addAll(categoryButtons);
+            for (VertexButton configButton : buttons) {
+                if (configButton.mouseDragEvent(mx, my)) {
+                    break;
+                }
+            }
+
+        }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 

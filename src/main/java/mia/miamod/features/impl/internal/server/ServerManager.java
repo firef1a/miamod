@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.regex.Pattern;
 
-public class ServerManager extends Feature implements ServerConnectionEventListener, PacketListener, AlwaysEnabled {
+public final class ServerManager extends Feature implements ServerConnectionEventListener, PacketListener, AlwaysEnabled {
     public static RecognizedServers currentServer = RecognizedServers.NONE;
     public static ServerConnectionStatus connectionStatus = ServerConnectionStatus.NONE;
 
