@@ -27,13 +27,10 @@ public abstract class MClientConnection {
     @Unique
     private static boolean canceled;
 
-    @Unique
-    private static boolean secondaryCanceled;
-
     @ModifyVariable(method = "handlePacket", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private static Packet<?> handlePacket(Packet<?> packet) {
         if (packet instanceof GameMessageS2CPacket(Text content, boolean overlay)) {
-            canceled = false; secondaryCanceled = false;
+            canceled = false;
 
             CallbackInfo ci = new CallbackInfo("", true);
             ModifiableEventData<Text> eventData = new ModifiableEventData<>(content, content);
@@ -44,9 +41,9 @@ public abstract class MClientConnection {
                 eventData = feature.chatEvent(eventData, ci).eventResult(content, eventData.modified());
             }
 
-            Text modifiedText = eventData.modified();
+            ModifiableEventData<Text> modifiableEventData = eventData;
 
-            if (FeatureManager.getFeature(MessageChatHudFeature.class).addMessage(modifiedText)) {
+            if (FeatureManager.getFeature(MessageChatHudFeature.class).addMessage(modifiableEventData)) {
                 canceled = true;
             }
             if (ci.isCancelled()) {
@@ -54,7 +51,7 @@ public abstract class MClientConnection {
             }
 
 
-            return new GameMessageS2CPacket(modifiedText, overlay);
+            return new GameMessageS2CPacket(modifiableEventData.modified(), overlay);
         }
         return packet;
     }

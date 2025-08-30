@@ -5,8 +5,8 @@ public enum DFMode {
     SPAWN("Spawn", false, false, false, false),
     PLAY("Play", true, false, false, false),
     BUILD("Build", true, true, false, false),
-    DEV("Dev", true, false, true, true),
-    CODE_SPECTATE("Code Spectate", false, false, false, true);
+    DEV("Dev", true, true, true, true),
+    CODE_SPECTATE("Code Spectate", true, false, false, true);
 
     private final String name;
     private final boolean onPlot;

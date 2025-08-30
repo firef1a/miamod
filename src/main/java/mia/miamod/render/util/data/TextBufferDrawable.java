@@ -4,6 +4,7 @@ import mia.miamod.Mod;
 import mia.miamod.render.util.ARGB;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 
 public class TextBufferDrawable extends BufferDrawable {
     Text text;
-    ARGB argb;
+    protected ARGB argb;
     boolean shadow;
     TextRenderer.TextLayerType textLayerType;
     int backgroundColor;
@@ -37,9 +38,13 @@ public class TextBufferDrawable extends BufferDrawable {
 
     @Override
     protected void draw(DrawContext context, int mouseX, int mouseY) {
+        drawText(context, topLeft().x,topLeft().y);
+    }
+
+    protected void drawText(DrawContext context, float x, float y) {
         Mod.MC.textRenderer.draw(
                 getText(),
-                topLeft().x,topLeft().y,
+                x, y,
                 argb.getARGB(),
                 shadow,
                 getFinalRenderMatrix4f(),

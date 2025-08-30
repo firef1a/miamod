@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CPUDisplay extends Feature implements RenderHUD, PacketListener {
+public final class CPUDisplay extends Feature implements RenderHUD, PacketListener {
     private double currentCPU = 0;
     private double displayCPU = 0;
     private long overlayTimeoutTimestamp = 0L;
@@ -38,7 +38,7 @@ public class CPUDisplay extends Feature implements RenderHUD, PacketListener {
     private static final double animationSpeed = 0.075;
     private double animation;
 
-    private EnumDataField<ColorStyle> colorStyleEnumDataField;
+    private final EnumDataField<ColorStyle> colorStyleEnumDataField;
 
     public CPUDisplay(Categories category) {
         super(category, "CPU Display", "cpuwheel", "its a wheel");
@@ -111,7 +111,7 @@ public class CPUDisplay extends Feature implements RenderHUD, PacketListener {
 
         BufferRenderer.drawWithGlobalProgram(buffer.end());
 
-        double cpu = MathUtils.roundToDecimalPlaces(displayCPU * 100, 2);
+        double cpu = (double )((int) ((displayCPU * 100.0) * 100.0)) / 100.0;
         String cpuString = String.valueOf(cpu).split("\\.")[1].length() <= 1 ? cpu + "0" : String.valueOf(cpu);
 
         Mod.MC.textRenderer.draw(
@@ -126,6 +126,7 @@ public class CPUDisplay extends Feature implements RenderHUD, PacketListener {
                 0,
                 15728880
         );
+
         matrices.pop();
         matrices.pop();
         matrices.pop();

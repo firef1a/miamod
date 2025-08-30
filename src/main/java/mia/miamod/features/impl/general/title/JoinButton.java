@@ -10,7 +10,7 @@ import mia.miamod.features.parameters.impl.EnumDataField;
 import mia.miamod.features.parameters.impl.IntegerDataField;
 import mia.miamod.features.parameters.impl.StringDataField;
 
-public class JoinButton extends Feature {
+public final class JoinButton extends Feature {
     private static StringDataField serverAddress;
     private static IntegerDataField serverPort;
     private static EnumDataField<DFIcons> joinIcon;

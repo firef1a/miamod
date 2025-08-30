@@ -10,14 +10,13 @@ import mia.miamod.features.Category;
 import mia.miamod.features.Feature;
 import mia.miamod.features.impl.internal.ConfigScreenFeature;
 import mia.miamod.features.parameters.ParameterDataField;
-import mia.miamod.features.parameters.impl.BooleanDataField;
-import mia.miamod.features.parameters.impl.EnumDataField;
-import mia.miamod.features.parameters.impl.IntegerSliderDataField;
-import mia.miamod.features.parameters.impl.InternalDataField;
+import mia.miamod.features.parameters.impl.*;
 import mia.miamod.render.util.ARGB;
 import mia.miamod.render.util.EasingFunctions;
 import mia.miamod.render.util.RenderHelper;
 import mia.miamod.render.util.data.*;
+import mia.miamod.render.util.data.impl.IntegerInputField;
+import mia.miamod.render.util.data.impl.StringInputField;
 import mia.miamod.render.util.data.impl.VertexEnableButton;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
@@ -47,6 +46,7 @@ public class ConfigScreen extends Screen {
     private CategoryButton selectedCategoryButton;
 
     private ArrayList<VertexButton> configButtons;
+    private ArrayList<StringInputField> inputFields;
 
     float   centerX, centerY,
             width, height,
@@ -229,8 +229,50 @@ public class ConfigScreen extends Screen {
                     enumText.setParentBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
                     enumText.setSelfBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
                     fieldRenderChildren.add(enumText);
+                } else if (field instanceof StringDataField stringDataField) {
+                    StringInputField stringInputField;
+                    stringInputField = new StringInputField(
+                            matrix4f,
+                            stringDataField,
+                            -leftMargin, 0,
+                            featureParameterContainer.getZ() + 3,
+                            new ARGB(ColorBank.WHITE, 1f),
+                            true
+                    );
+
+                    stringInputField.setCallback(() -> inputFields.forEach(f -> {
+                        if (f != stringInputField) f.setFocused(false);
+                    }));
+                    clickCallback = () -> { };
+
+
+                    stringInputField.setParentBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    stringInputField.setSelfBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    inputFields.add(stringInputField);
+                    fieldRenderChildren.add(stringInputField);
                 } else if (field instanceof IntegerSliderDataField integerSliderDataField) {
 
+                } else if (field instanceof IntegerDataField integerDataField) {
+                    IntegerInputField stringInputField;
+                    stringInputField = new IntegerInputField(
+                            matrix4f,
+                            integerDataField,
+                            -leftMargin, 0,
+                            featureParameterContainer.getZ() + 3,
+                            new ARGB(ColorBank.WHITE, 1f),
+                            true
+                    );
+
+                    stringInputField.setCallback(() -> inputFields.forEach(f -> {
+                        if (f != stringInputField) f.setFocused(false);
+                    }));
+                    clickCallback = () -> { };
+
+
+                    stringInputField.setParentBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    stringInputField.setSelfBinding(new DrawableBinding(AxisBinding.FULL, AxisBinding.MIDDLE));
+                    inputFields.add(stringInputField);
+                    fieldRenderChildren.add(stringInputField);
                 }
 
 
@@ -451,6 +493,7 @@ public class ConfigScreen extends Screen {
 
     private void setMenuCategory(Category category) {
         ArrayList<FeatureContainer> featureContainers = new ArrayList<>();
+        inputFields = new ArrayList<>();
         configButtons = new ArrayList<>();
         main.clearDrawables();
 
@@ -564,16 +607,21 @@ public class ConfigScreen extends Screen {
         int mx = (int) mouseX;
         int my = (int) mouseY;
         if (configButtons != null) {
-            configButtons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
-
             ArrayList<VertexButton> buttons = new ArrayList<>();
             buttons.addAll(configButtons);
             buttons.addAll(categoryButtons);
+
+            buttons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
             for (VertexButton configButton : buttons) {
                 if (configButton.mouseDownEvent(mx, my)) {
                     SoundManager.playUIButtonClick();
                     break;
                 }
+            }
+
+            inputFields.sort(Comparator.comparingInt(a -> (int) a.getZ()));
+            for (StringInputField b : inputFields) {
+                b.mouseDownEvent(mx, my);
             }
 
         }
@@ -585,13 +633,21 @@ public class ConfigScreen extends Screen {
         int mx = (int) mouseX;
         int my = (int) mouseY;
         if (configButtons != null) {
-            configButtons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
-
             ArrayList<VertexButton> buttons = new ArrayList<>();
             buttons.addAll(configButtons);
             buttons.addAll(categoryButtons);
+
+
+            buttons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
             for (VertexButton configButton : buttons) {
                 if (configButton.mouseUpEvent(mx, my)) {
+                    break;
+                }
+            }
+
+            inputFields.sort(Comparator.comparingInt(a -> (int) a.getZ()));
+            for (StringInputField b : inputFields) {
+                if (b.mouseUpEvent(mx, my)) {
                     break;
                 }
             }
@@ -605,19 +661,47 @@ public class ConfigScreen extends Screen {
         int mx = (int) mouseX;
         int my = (int) mouseY;
         if (configButtons != null) {
-            configButtons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
 
             ArrayList<VertexButton> buttons = new ArrayList<>();
             buttons.addAll(configButtons);
             buttons.addAll(categoryButtons);
+
+
+            buttons.sort(Comparator.comparingInt(a -> (int) a.getZ()));
             for (VertexButton configButton : buttons) {
                 if (configButton.mouseDragEvent(mx, my)) {
                     break;
                 }
             }
-
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (inputFields != null) {
+            inputFields.sort(Comparator.comparingInt(a -> (int) a.getZ()));
+
+            for (StringInputField inputField : inputFields) {
+                if (inputField.charTyped(chr, modifiers));
+            }
+
+        }
+        return super.charTyped(chr, modifiers);
+    }
+
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (inputFields != null) {
+            inputFields.sort(Comparator.comparingInt(a -> (int) a.getZ()));
+
+            for (StringInputField inputField : inputFields) {
+                if (inputField.keyPressed(keyCode, scanCode, modifiers));
+            }
+
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     public void openStage() { configScreenStage = AnimationStage.OPENING; }

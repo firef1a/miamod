@@ -28,6 +28,7 @@ public class VertexButton extends VertexRect {
 
     public void setCallback(Runnable callback) { this.callback = callback; }
 
+    @Override
     public boolean mouseDownEvent(int mouseX, int mouseY) {
         if (containsPoint(mouseX, mouseY, true)) {
             return onMouseDown(mouseX, mouseY);
@@ -35,6 +36,7 @@ public class VertexButton extends VertexRect {
         return false;
     }
 
+    @Override
     public boolean mouseUpEvent(int mouseX, int mouseY) {
         if (containsPoint(mouseX, mouseY, true)) {
             return onMouseUp(mouseX, mouseY);
@@ -42,6 +44,7 @@ public class VertexButton extends VertexRect {
         return false;
     }
 
+    @Override
     public boolean mouseDragEvent(int mouseX, int mouseY) {
         if (containsPoint(mouseX, mouseY, true)) {
             return onMouseDrag(mouseX, mouseY);

@@ -24,7 +24,7 @@ import java.util.Set;
 // This code is ancient and should prob be recoded for the new component system at some point
 // I just copied in some inputs from another mod to make it work with components
 
-public class ItemTagViewer extends Feature implements RenderTooltip {
+public final class ItemTagViewer extends Feature implements RenderTooltip {
     private static final int regularKeyColor = 0xf0c2ff;
     private static final int componentDataKeyColor = 0x9cffca;
     private static final int stringValueColor = 0xc2daff;

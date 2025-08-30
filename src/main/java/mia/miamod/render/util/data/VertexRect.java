@@ -97,4 +97,20 @@ public class VertexRect extends BufferDrawable {
         context.fill((int)topLeft().x, (int)topLeft().y, (int)bottomRight().x, (int)bottomRight().y, (int) z, argb.getARGB());
         matrices.pop();
     }
+
+    public boolean mouseDownEvent(int mouseX, int mouseY) {
+        return false;
+    }
+
+    public boolean mouseUpEvent(int mouseX, int mouseY) {
+        return false;
+    }
+
+    public boolean mouseDragEvent(int mouseX, int mouseY) {
+        return false;
+    }
+
+    public boolean charTyped(char chr, int modifiers) {
+        return false;
+    }
 }

@@ -48,7 +48,8 @@ public final class MessageChatHudFeature extends Feature implements RenderHUD, T
             Pattern.compile("^! Incoming Report \\(([a-zA-Z0-9_]{3,16})\\)"),
             Pattern.compile("^(?:\\[Silent] | ||)([a-zA-Z0-9_]{3,16}) (?:tempmuted|muted|banned|tempbanned|warned|unwarned|unbanned|unmuted) ([a-zA-Z0-9_]{3,16})"),
             Pattern.compile("^» Vanish enabled\\. You will not be visible to other players\\."),
-            Pattern.compile("^» Vanish disabled\\. You will now be visible to other players\\.")
+            Pattern.compile("^» Vanish disabled\\. You will now be visible to other players\\."),
+            Pattern.compile("^IP report for user [a-zA-Z0-9_]{3,16}:")
     );
 
 
@@ -56,21 +57,24 @@ public final class MessageChatHudFeature extends Feature implements RenderHUD, T
         super(category, "Message Chat Hud", "mch", "Separate chat hud for important stuff");
     }
 
-    public boolean addMessage(Text message) {
+    public boolean addMessage(ModifiableEventData<Text> eventData) {
+        Text base = eventData.base();
+        Text modified = eventData.modified();
+        String baseString = base.getString();
         if (FeatureManager.getFeature(MessageChatHudFeature.class) == null || (!FeatureManager.getFeature(MessageChatHudFeature.class).getEnabled())) return false;
 
         boolean matches = false;
         for (Pattern pattern : patterns) {
-            if (pattern.matcher(message.getString()).find()) {
+            if (pattern.matcher(baseString).find()) {
                 matches = true;
                 break;
             }
         }
-        if (MOD_LOG.matcher(message.getString()).find()) isModLog = !isModLog;
+        if (MOD_LOG.matcher(baseString).find()) isModLog = !isModLog;
         matches = matches || isModLog;
 
         if (matches) {
-            messageChatHud.addMessage(message);
+            messageChatHud.addMessage(modified);
         }
         return matches;
     }
