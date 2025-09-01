@@ -1,5 +1,6 @@
 package mia.miamod.features;
 
+import mia.miamod.features.impl.development.CodeSignColorer;
 import mia.miamod.features.impl.development.cpudisplay.CPUDisplay;
 import mia.miamod.features.impl.general.AutoTip;
 import mia.miamod.features.impl.general.chat.BetterSCTags;
@@ -11,10 +12,16 @@ import mia.miamod.features.impl.internal.commands.CommandAliaser;
 import mia.miamod.features.impl.internal.commands.CommandScheduler;
 import mia.miamod.features.impl.internal.mode.LocationAPI;
 import mia.miamod.features.impl.internal.server.ServerManager;
+import mia.miamod.features.impl.internal.superdupertopsecrte.VerboseLogger;
 import mia.miamod.features.impl.moderation.BetterVanishMSG;
 import mia.miamod.features.impl.internal.staff.VanishTracker;
+import mia.miamod.features.impl.moderation.PlayerGrab;
+import mia.miamod.features.impl.moderation.tracker.PlayerOutliner;
 import mia.miamod.features.impl.moderation.reports.clickonreportsinchattoteleporttothem;
 import mia.miamod.features.impl.support.AutoQueue;
+import mia.miamod.features.impl.support.CSChestPreview;
+import mia.miamod.features.impl.support.CSFunctionTeleporter;
+import mia.miamod.features.impl.support.CSSignPeeker;
 import mia.miamod.features.listeners.AbstractEventListener;
 
 import java.util.Collection;
@@ -43,15 +50,21 @@ public abstract class FeatureManager {
         add(new AutoTip(Categories.GENERAL));
         add(new BetterSCTags(Categories.GENERAL));
         add(new MessageChatHudFeature(Categories.GENERAL));
-        //add(new DotSlashBypass(Categories.GENERAL));
 
         add(new CPUDisplay(Categories.DEV));
         add(new ItemTagViewer(Categories.DEV));
+        add(new CodeSignColorer(Categories.DEV));
 
         add(new AutoQueue(Categories.SUPPORT));
+        add(new CSFunctionTeleporter(Categories.SUPPORT));
+        add(new CSSignPeeker(Categories.SUPPORT));
+        add(new CSChestPreview(Categories.SUPPORT));
 
+        add(new PlayerOutliner(Categories.MODERATION));
         add(new BetterVanishMSG(Categories.MODERATION));
         add(new clickonreportsinchattoteleporttothem(Categories.MODERATION));
+
+        add(new PlayerGrab(Categories.SILLY));
 
         initInternalFeatures();
     }
@@ -63,6 +76,7 @@ public abstract class FeatureManager {
         add(new CommandScheduler(Categories.INTERNAL));
         add(new VanishTracker(Categories.INTERNAL));
         add(new LocationAPI(Categories.INTERNAL));
+        add(new VerboseLogger(Categories.INTERNAL));
     }
 
     private static void add(Feature feature) {

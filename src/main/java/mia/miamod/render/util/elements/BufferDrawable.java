@@ -1,8 +1,6 @@
-package mia.miamod.render.util.data;
+package mia.miamod.render.util.elements;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;

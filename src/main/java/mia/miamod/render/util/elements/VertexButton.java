@@ -1,4 +1,4 @@
-package mia.miamod.render.util.data;
+package mia.miamod.render.util.elements;
 
 import mia.miamod.render.util.ARGB;
 import net.minecraft.client.gui.DrawContext;

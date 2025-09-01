@@ -1,7 +1,7 @@
 package mia.miamod.render.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mia.miamod.render.util.data.BufferDrawable;
+import mia.miamod.render.util.elements.BufferDrawable;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
@@ -9,10 +9,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class RenderHelper {
+public final class RenderHelper {
     private final Tessellator tessellator;
     //private ArrayList<BufferDrawable> bufferDrawList;
     //private VertexConsumerProvider.Immediate vertexConsumerProvider;

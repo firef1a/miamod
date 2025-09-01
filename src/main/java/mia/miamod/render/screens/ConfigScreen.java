@@ -14,10 +14,10 @@ import mia.miamod.features.parameters.impl.*;
 import mia.miamod.render.util.ARGB;
 import mia.miamod.render.util.EasingFunctions;
 import mia.miamod.render.util.RenderHelper;
-import mia.miamod.render.util.data.*;
-import mia.miamod.render.util.data.impl.IntegerInputField;
-import mia.miamod.render.util.data.impl.StringInputField;
-import mia.miamod.render.util.data.impl.VertexEnableButton;
+import mia.miamod.render.util.elements.*;
+import mia.miamod.render.util.elements.impl.IntegerInputField;
+import mia.miamod.render.util.elements.impl.StringInputField;
+import mia.miamod.render.util.elements.impl.VertexEnableButton;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -350,7 +350,10 @@ public class ConfigScreen extends Screen {
             super.draw(context, mouseX, mouseY);
             if (containsPoint((int) mouseX, (int) mouseY, true)) {
                 if (ConfigScreen.configScreenStage.equals(AnimationStage.OPEN)) {
+                    context.getMatrices().push();
+                    context.getMatrices().translate(0,0,100);
                     context.drawTooltip(Mod.MC.textRenderer, Text.literal(feature.getDescription()), mouseX, mouseY);
+                    context.getMatrices().pop();
                 }
             }
         }

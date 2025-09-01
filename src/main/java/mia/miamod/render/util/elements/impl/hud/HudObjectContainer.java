@@ -1,7 +1,7 @@
-package mia.miamod.render.util.data.impl.hud;
+package mia.miamod.render.util.elements.impl.hud;
 
 import mia.miamod.render.util.ARGB;
-import mia.miamod.render.util.data.VertexButton;
+import mia.miamod.render.util.elements.VertexButton;
 import org.joml.Matrix4f;
 
 public class HudObjectContainer extends VertexButton {

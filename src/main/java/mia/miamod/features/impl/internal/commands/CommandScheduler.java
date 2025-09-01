@@ -5,10 +5,9 @@ import mia.miamod.Mod;
 import mia.miamod.features.Categories;
 import mia.miamod.features.Feature;
 import mia.miamod.features.impl.internal.server.ServerManager;
-import mia.miamod.features.listeners.impl.AlwaysEnabled;
-import mia.miamod.features.listeners.impl.RegisterCommandListener;
-import mia.miamod.features.listeners.impl.ServerConnectionEventListener;
-import mia.miamod.features.listeners.impl.TickEvent;
+import mia.miamod.features.listeners.ModifiableEventData;
+import mia.miamod.features.listeners.ModifiableEventResult;
+import mia.miamod.features.listeners.impl.*;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
@@ -16,14 +15,22 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.command.CommandRegistryAccess;
 
 import net.minecraft.client.gui.screen.Screen;
-import java.util.ArrayList;
+import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public final class CommandScheduler extends Feature implements TickEvent, ServerConnectionEventListener, AlwaysEnabled {
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public final class CommandScheduler extends Feature implements TickEvent, ServerConnectionEventListener, ChatEventListener, AlwaysEnabled {
     private static ArrayList<ScheduledCommand> scheduledCommands;
+    private static ArrayList<ChatConsumer> chatConsumers;
     private static long nextTimestamp;
+
     public CommandScheduler(Categories category) {
         super(category, "cmd scheduler", "cmd_scheduler", "Schedules non-player executed commands.");
         scheduledCommands = new ArrayList<>();
+        chatConsumers = new ArrayList<>();
         nextTimestamp = 0L;
     }
 
@@ -31,17 +38,74 @@ public final class CommandScheduler extends Feature implements TickEvent, Server
         scheduledCommands.add(scheduledCommand);
     }
 
+    public static void addChatConsumer(ChatConsumer chatConsumer) {
+        chatConsumers.add(chatConsumer);
+    }
+
+    public static void removeChatConsumer(ChatConsumer chatConsumer) {
+        chatConsumers.remove(chatConsumer);
+    }
+
+    public static long getMaxCommandDelay() {
+        long delay = 0L;
+
+        for (ScheduledCommand scheduledCommand : scheduledCommands) {
+            delay += scheduledCommand.getDelay();
+        }
+
+        return delay;
+    }
+
+    public static ArrayList<ScheduledCommand> getScheduledCommands() { return scheduledCommands; }
+
+    @Override
+    public ModifiableEventResult<Text> chatEvent(ModifiableEventData<Text> message, CallbackInfo ci) {
+        String content = message.base().getString();
+
+        ArrayList<ChatConsumer> removeConsumers = new ArrayList<>();
+        for (ChatConsumer chatConsumer : chatConsumers) {
+            Matcher matcher = chatConsumer.pattern().matcher(content);
+
+            if (matcher.find()) {
+                chatConsumer.successfulMatch().accept(matcher);
+                if (chatConsumer.cancelMessage()) ci.cancel();
+                removeConsumers.add(chatConsumer);
+                break;
+            }
+        }
+        chatConsumers.removeAll(removeConsumers);
+        return message.pass();
+    }
+
     @Override
     public void tickR(int tick) {
         if (!ServerManager.isOnDiamondFire()) return;
 
         long currentTimestamp = System.currentTimeMillis();
-        if (nextTimestamp > currentTimestamp) return;
 
         if (!scheduledCommands.isEmpty() && Mod.MC.getNetworkHandler() != null && Mod.MC.world != null && Mod.MC.player != null) {
-            ScheduledCommand scheduledCommand = scheduledCommands.removeFirst();
+            ScheduledCommand scheduledCommand = scheduledCommands.getFirst();
+            if (nextTimestamp + scheduledCommand.delay() > currentTimestamp) return;
+            scheduledCommands.removeFirst();
+
+            for (ChatConsumer chatConsumer : scheduledCommand.commandConsumers()) {
+                chatConsumer.setTimestamp();
+                addChatConsumer(chatConsumer);
+            }
             Mod.sendCommand("/" + scheduledCommand.command());
+
             nextTimestamp = currentTimestamp + scheduledCommand.getDelay();
+        }
+
+        if (!chatConsumers.isEmpty()) {
+            ArrayList<ChatConsumer> removeConsumers = new ArrayList<>();
+            for (ChatConsumer chatConsumer : chatConsumers) {
+                if (System.currentTimeMillis() > chatConsumer.timestamp()) {
+                    chatConsumer.timeoutEvent.run();
+                    removeConsumers.add(chatConsumer);
+                }
+            }
+            chatConsumers.removeAll(removeConsumers);
         }
     }
 

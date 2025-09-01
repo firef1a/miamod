@@ -1,11 +1,9 @@
-package mia.miamod.render.util.data.impl;
+package mia.miamod.render.util.elements.impl;
 
 import mia.miamod.features.parameters.impl.IntegerDataField;
-import mia.miamod.features.parameters.impl.StringDataField;
 import mia.miamod.render.util.ARGB;
 import org.joml.Matrix4f;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

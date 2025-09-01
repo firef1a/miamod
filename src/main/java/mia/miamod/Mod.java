@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,10 +70,6 @@ public class Mod implements ClientModInitializer {
 			FeatureManager.implementFeatureListener(PlayerUseEventListener.class, feature -> feature.useBlockCallback(player, world, hand, hitResult));
 			return ActionResult.PASS;
 		});
-		UseItemCallback.EVENT.register((player, world, hand) -> {
-			FeatureManager.implementFeatureListener(PlayerUseEventListener.class, feature -> feature.useItemCallback(player, world, hand));
-			return ActionResult.PASS;
-		});
 		UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
 			FeatureManager.implementFeatureListener(PlayerUseEventListener.class, feature -> feature.useEntityCallback(player, world, hand, entity, hitResult));
 			return ActionResult.PASS;
@@ -101,4 +98,29 @@ public class Mod implements ClientModInitializer {
 	public static void log(String msg) { LOGGER.info(msg); }
 	public static void warn(String msg) { LOGGER.warn(msg); }
 	public static void error(String msg) { LOGGER.error(msg); }
+
+	private static void message(Text message, int mia, int main) {
+		if (Mod.MC.player == null) return;
+		Mod.MC.player.sendMessage(Text.empty()
+						.append(Text.literal("mia ").withColor(mia))
+						.append(Text.literal("᛬ ").withColor(0x9c9c9c))
+						.append(message.copy().withColor(main))
+				, false);
+	}
+
+	public static void message(Text message) {
+		message(message, 0xdbb0ff, ColorBank.WHITE);
+	}
+
+	public static void message(String message) {
+		message(Text.literal(message), 0xdbb0ff, ColorBank.WHITE);
+	}
+
+
+	public static void messageError(Text message) {
+		message(message, 0xff695c, 0xff6052);
+	}
+	public static void messageError(String message) {
+		messageError(Text.literal(message));
+	}
 }

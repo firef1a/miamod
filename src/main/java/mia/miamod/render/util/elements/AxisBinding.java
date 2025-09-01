@@ -1,4 +1,4 @@
-package mia.miamod.render.util.data;
+package mia.miamod.render.util.elements;
 
 public enum AxisBinding {
     NONE(0f),

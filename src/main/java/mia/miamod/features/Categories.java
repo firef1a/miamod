@@ -9,6 +9,7 @@ public enum Categories {
     DEV(new Category("development")),
     SUPPORT(new Category("support")),
     MODERATION(new Category("moderation")),
+    SILLY(new Category("silly :3")),
     INTERNAL(new Category("internal"));
 
     private final Category category;

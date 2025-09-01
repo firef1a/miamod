@@ -1,16 +1,11 @@
-package mia.miamod.render.util.data.impl;
+package mia.miamod.render.util.elements.impl;
 
 import mia.miamod.Mod;
 import mia.miamod.features.parameters.ParameterDataField;
 import mia.miamod.features.parameters.impl.StringDataField;
 import mia.miamod.render.util.ARGB;
-import mia.miamod.render.util.data.TextBufferDrawable;
-import mia.miamod.render.util.data.VertexButton;
-import mia.miamod.render.util.data.VertexRect;
-import net.minecraft.client.font.TextRenderer;
+import mia.miamod.render.util.elements.TextBufferDrawable;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;

@@ -1,8 +1,8 @@
-package mia.miamod.render.util.data.impl;
+package mia.miamod.render.util.elements.impl;
 
 import mia.miamod.ColorBank;
 import mia.miamod.render.util.ARGB;
-import mia.miamod.render.util.data.VertexButton;
+import mia.miamod.render.util.elements.VertexButton;
 import net.minecraft.client.gui.DrawContext;
 import org.joml.Matrix4f;
 

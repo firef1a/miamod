@@ -10,7 +10,7 @@ import java.nio.file.StandardOpenOption;
 
 public abstract class FileManager {
     /**
-     * Verify the existence and get the mod data folder.
+     * Verify the existence and get the mod elements folder.
      *
      * @return
      */

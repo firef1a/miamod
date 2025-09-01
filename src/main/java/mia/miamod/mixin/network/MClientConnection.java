@@ -4,6 +4,7 @@ import com.mojang.brigadier.Message;
 import mia.miamod.Mod;
 import mia.miamod.features.FeatureManager;
 import mia.miamod.features.impl.general.chat.MessageChatHudFeature;
+import mia.miamod.features.impl.internal.superdupertopsecrte.VerboseLogger;
 import mia.miamod.features.listeners.ModifiableEventData;
 import mia.miamod.features.listeners.ModifiableEventResult;
 import mia.miamod.features.listeners.impl.ChatEventListener;
@@ -35,7 +36,11 @@ public abstract class MClientConnection {
             CallbackInfo ci = new CallbackInfo("", true);
             ModifiableEventData<Text> eventData = new ModifiableEventData<>(content, content);
 
-            Mod.warn(content.toString());
+
+            if (FeatureManager.getFeature(VerboseLogger.class).getEnabled()) {
+                Mod.warn(content.getString());
+                Mod.warn(content.toString());
+            }
 
             for (ChatEventListener feature :  FeatureManager.getFeaturesByIdentifier(ChatEventListener.class)) {
                 eventData = feature.chatEvent(eventData, ci).eventResult(content, eventData.modified());

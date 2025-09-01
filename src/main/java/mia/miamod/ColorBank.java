@@ -5,6 +5,8 @@ import net.minecraft.util.Colors;
 public abstract class ColorBank {
     public static final int WHITE = Colors.WHITE;
     public static final int BLACK = Colors.BLACK;
+    public static final int WHITE_GRAY = 0xcfcfcf;
+
 
     public static final int MC_GRAY = Colors.LIGHT_GRAY;
     public static final int MC_DARK_GRAY = Colors.GRAY;

@@ -29,7 +29,7 @@ public class ConfigStore {
     }
 
     public static void load() {
-        // load data here
+        // load elements here
         try {
             configData = new JsonParser().parse(FileManager.readConfig(FileManager.getConfigFile())).getAsJsonObject();
         } catch (Exception exception) {

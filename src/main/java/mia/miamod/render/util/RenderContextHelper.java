@@ -1,11 +1,9 @@
 package mia.miamod.render.util;
 
 import mia.miamod.Mod;
-import mia.miamod.render.util.data.VertexRect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -20,7 +18,7 @@ import java.util.Locale;
 
 import static net.minecraft.client.render.VertexFormat.DrawMode.DEBUG_LINES;
 
-public class RenderContextHelper {
+public abstract class RenderContextHelper {
     public static final RenderLayer.MultiPhase LINES = makeLayer(DEBUG_LINES);
     public static final RenderLayer.MultiPhase QUADS = makeLayer(VertexFormat.DrawMode.QUADS);
 

@@ -1,10 +1,9 @@
-package mia.miamod.render.util.data;
+package mia.miamod.render.util.elements;
 
 import mia.miamod.Mod;
 import mia.miamod.render.util.ARGB;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 

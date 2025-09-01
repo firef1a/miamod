@@ -7,7 +7,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
-public class HudMatrixRegistry {
+public abstract class HudMatrixRegistry {
     public static Matrix4f modelViewMatrix;
     public static Matrix4f projectionMatrix;
     public static Matrix4f positionMatrix;

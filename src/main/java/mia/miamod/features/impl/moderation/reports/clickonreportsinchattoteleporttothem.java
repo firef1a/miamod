@@ -13,6 +13,8 @@ import mia.miamod.features.listeners.ModifiableEventResult;
 import mia.miamod.features.listeners.impl.ChatEventListener;
 import mia.miamod.features.listeners.impl.RegisterCommandListener;
 import mia.miamod.features.listeners.impl.ServerConnectionEventListener;
+import mia.miamod.features.parameters.ParameterIdentifier;
+import mia.miamod.features.parameters.impl.BooleanDataField;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -28,9 +30,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class clickonreportsinchattoteleporttothem extends Feature implements ChatEventListener, RegisterCommandListener {
+    private final BooleanDataField runalts;
 
     public clickonreportsinchattoteleporttothem(Categories category) {
         super(category, "clickonreportsinchattoteleporttothem", "clickonreportsinchattoteleporttothem", "title");
+        runalts = new BooleanDataField("Run /alts", ParameterIdentifier.of(this, "runalts"), true, true);
+
     }
 
     @Override
@@ -55,9 +60,9 @@ public final class clickonreportsinchattoteleporttothem extends Feature implemen
                     style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             Text.empty()
                                     .append(Text.literal("Follow ").withColor(ColorBank.MC_GRAY))
-                                    .append(Text.literal(offender).withColor(0xcfcfcf))
+                                    .append(Text.literal(offender).withColor(ColorBank.WHITE_GRAY))
                                     .append(Text.literal(" to ").withColor(ColorBank.MC_GRAY))
-                                    .append(Text.literal(node_formated).withColor(0xcfcfcf))
+                                    .append(Text.literal(node_formated).withColor(ColorBank.WHITE_GRAY))
                             ))
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/internal_report_teleport " + node_id + " " + offender))));
         }
@@ -78,6 +83,7 @@ public final class clickonreportsinchattoteleporttothem extends Feature implemen
                         CommandScheduler.addCommand(new ScheduledCommand("preference mod_vanish true"));
                         CommandScheduler.addCommand(new ScheduledCommand("server " + node_id));
                         CommandScheduler.addCommand(new ScheduledCommand("tp " + player_name, 250L));
+                        if (runalts.getValue()) CommandScheduler.addCommand(new ScheduledCommand("alts " + player_name));
 
                         return 1;
                     })

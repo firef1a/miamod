@@ -1,4 +1,4 @@
-package mia.miamod.render.util.data;
+package mia.miamod.render.util.elements;
 
 public class DrawableBinding {
     private AxisBinding xBinding, yBinding;
