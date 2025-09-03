@@ -47,7 +47,7 @@ public final class MessageChatHud {
     private static final int field_39773 = 4;
     private static final int OFFSET_FROM_BOTTOM = 40;
     private static final int REMOVAL_QUEUE_TICKS = 60;
-    private static final double maxVisibleTime = 800.0;
+    private static final double maxVisibleTime = 1600.0;
     private static final Text DELETED_MARKER_TEXT = Text.translatable("chat.deleted_marker").formatted(Formatting.GRAY, Formatting.ITALIC);
     private final MinecraftClient client;
     private final ArrayListDeque<String> messageHistory = new ArrayListDeque<>(1000);

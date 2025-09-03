@@ -16,12 +16,11 @@ import mia.miamod.features.impl.internal.superdupertopsecrte.VerboseLogger;
 import mia.miamod.features.impl.moderation.BetterVanishMSG;
 import mia.miamod.features.impl.internal.staff.VanishTracker;
 import mia.miamod.features.impl.moderation.PlayerGrab;
+import mia.miamod.features.impl.moderation.merowwwaadfa;
 import mia.miamod.features.impl.moderation.tracker.PlayerOutliner;
 import mia.miamod.features.impl.moderation.reports.clickonreportsinchattoteleporttothem;
-import mia.miamod.features.impl.support.AutoQueue;
-import mia.miamod.features.impl.support.CSChestPreview;
-import mia.miamod.features.impl.support.CSFunctionTeleporter;
-import mia.miamod.features.impl.support.CSSignPeeker;
+import mia.miamod.features.impl.support.*;
+import mia.miamod.features.impl.support.supporthud.SupportHUD;
 import mia.miamod.features.listeners.AbstractEventListener;
 
 import java.util.Collection;
@@ -56,6 +55,7 @@ public abstract class FeatureManager {
         add(new CodeSignColorer(Categories.DEV));
 
         add(new AutoQueue(Categories.SUPPORT));
+        add(new SupportHUD(Categories.SUPPORT));
         add(new CSFunctionTeleporter(Categories.SUPPORT));
         add(new CSSignPeeker(Categories.SUPPORT));
         add(new CSChestPreview(Categories.SUPPORT));
@@ -65,6 +65,7 @@ public abstract class FeatureManager {
         add(new clickonreportsinchattoteleporttothem(Categories.MODERATION));
 
         add(new PlayerGrab(Categories.SILLY));
+        add(new merowwwaadfa(Categories.SILLY));
 
         initInternalFeatures();
     }

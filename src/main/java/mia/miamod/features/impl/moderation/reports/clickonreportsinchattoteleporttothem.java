@@ -6,8 +6,10 @@ import mia.miamod.ColorBank;
 import mia.miamod.Mod;
 import mia.miamod.features.Categories;
 import mia.miamod.features.Feature;
+import mia.miamod.features.FeatureManager;
 import mia.miamod.features.impl.internal.commands.CommandScheduler;
 import mia.miamod.features.impl.internal.commands.ScheduledCommand;
+import mia.miamod.features.impl.moderation.tracker.PlayerOutliner;
 import mia.miamod.features.listeners.ModifiableEventData;
 import mia.miamod.features.listeners.ModifiableEventResult;
 import mia.miamod.features.listeners.impl.ChatEventListener;
@@ -79,6 +81,11 @@ public final class clickonreportsinchattoteleporttothem extends Feature implemen
                     .executes(commandContext -> {
                         String player_name = StringArgumentType.getString(commandContext, "player_name");
                         String node_id = StringArgumentType.getString(commandContext, "node_id");
+
+                        PlayerOutliner playerOutliner = FeatureManager.getFeature(PlayerOutliner.class);
+                        if (playerOutliner.getEnabled()) {
+                            playerOutliner.trackPlayer(player_name);
+                        }
 
                         CommandScheduler.addCommand(new ScheduledCommand("preference mod_vanish true"));
                         CommandScheduler.addCommand(new ScheduledCommand("server " + node_id));

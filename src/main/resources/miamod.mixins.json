@@ -11,12 +11,12 @@
   "client": [
     "hud.MChatHud",
     "hud.MChatScreen",
+    "hud.MInGameHUD",
+    "hud.MMouse",
     "hud.MTitleScreen",
     "hud.MToastManager",
     "network.MClientConnection",
-    "player.MMinecraftClient"
-  ],
-  "mixins": [
+    "player.MMinecraftClient",
     "render.MSignBlockEntity"
   ]
 }

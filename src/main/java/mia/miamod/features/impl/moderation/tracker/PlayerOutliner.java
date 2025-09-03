@@ -10,6 +10,7 @@ import mia.miamod.features.Feature;
 import mia.miamod.features.impl.internal.commands.ChatConsumer;
 import mia.miamod.features.impl.internal.commands.CommandScheduler;
 import mia.miamod.features.impl.internal.commands.ScheduledCommand;
+import mia.miamod.features.impl.internal.server.ServerManager;
 import mia.miamod.features.listeners.impl.RegisterCommandListener;
 import mia.miamod.features.listeners.impl.RenderHUD;
 import mia.miamod.features.listeners.impl.TickEvent;
@@ -36,6 +37,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 
+import javax.sound.midi.Track;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -43,6 +45,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static mia.miamod.core.StreamUtils.getPlayerList;
+import static mia.miamod.render.util.RenderContextHelper.enableScissorsGL;
 
 public final class PlayerOutliner extends Feature implements RegisterCommandListener, RenderHUD, TickEvent {
     private ArrayList<TrackedPlayer> trackedPlayers;
@@ -82,7 +85,7 @@ public final class PlayerOutliner extends Feature implements RegisterCommandList
                                         .append(Text.literal(player_name).withColor(ColorBank.WHITE_GRAY)));
                             } else {
                                 if (Pattern.matches("[a-zA-Z0-9_]{3,16}",player_name)) {
-                                    trackedPlayers.add(new TrackedPlayer(player_name, new PlayerLocation("null"), new ARGB(0xFFFFFF, 1f)));
+                                    trackPlayer(player_name);
 
                                     Mod.message(Text.empty()
                                             .append(Text.literal("Tracking ").withColor(ColorBank.WHITE))
@@ -102,9 +105,19 @@ public final class PlayerOutliner extends Feature implements RegisterCommandList
         );
     }
 
+    public void trackPlayer(String player_name) {
+        ArrayList<TrackedPlayer> remove = new ArrayList<>();
+        for (TrackedPlayer trackedPlayer : trackedPlayers) {
+            if (trackedPlayer.playerName.equals(player_name)) remove.add(trackedPlayer);
+        }
+        trackedPlayers.removeAll(remove);
+        trackedPlayers.add(new TrackedPlayer(player_name, new PlayerLocation("null"), (long) (Math.random() * 1000L)));
+    }
+
     @Override
     public void tickR(int tick) {
         if (Mod.MC.world == null) return;
+        if (ServerManager.isNotOnDiamondFire()) return;
 
         if (trackedPlayers != null) {
             List<String> renderedPlayerNames = Mod.MC.world.getPlayers().stream().map(player -> player.getName().getString()).collect(Collectors.toCollection(ArrayList::new));
@@ -151,14 +164,14 @@ public final class PlayerOutliner extends Feature implements RegisterCommandList
     private static final class TrackedPlayer {
         public String playerName;
         public PlayerLocation playerLocation;
-        public ARGB outlineColor;
         public PlayerState playerState;
+        public long colorPhase;
 
-        public TrackedPlayer(String playerName, PlayerLocation playerLocation, ARGB outlineColor) {
+        public TrackedPlayer(String playerName, PlayerLocation playerLocation, long colorPhase) {
             this.playerName = playerName;
             this.playerLocation = playerLocation;
-            this.outlineColor = outlineColor;
             this.playerState = PlayerState.ONLINE;
+            this.colorPhase = colorPhase;
         }
 
         public void setPlayerState(PlayerState playerState) {
@@ -200,6 +213,7 @@ public final class PlayerOutliner extends Feature implements RegisterCommandList
         if (Mod.MC.world == null) return;
         if (Mod.MC.player == null) return;
         if (Mod.MC.getNetworkHandler() == null) return;
+        if (ServerManager.isNotOnDiamondFire()) return;
         if (frustum == null) return;
 
 
@@ -294,10 +308,11 @@ public final class PlayerOutliner extends Feature implements RegisterCommandList
         int purple = new ARGB(0xed7aff, 1f).getARGB();
 
         int period = 5;
-        int c1 = isRainbow ? getRainbowARGB(0, period).getARGB() : purple;
-        int c2 = isRainbow ? getRainbowARGB(100L, period).getARGB() : purple;
-        int c3 = isRainbow ?getRainbowARGB(200L, period).getARGB() : purple;
-        int c4 = isRainbow ? getRainbowARGB(300L, period).getARGB() : purple;
+        long phase = trackedPlayer.colorPhase;
+        int c1 = isRainbow ? getRainbowARGB(0+phase, period).getARGB() : purple;
+        int c2 = isRainbow ? getRainbowARGB(100L+phase, period).getARGB() : purple;
+        int c3 = isRainbow ?getRainbowARGB(200L+phase, period).getARGB() : purple;
+        int c4 = isRainbow ? getRainbowARGB(300L+phase, period).getARGB() : purple;
 
         int x = boundingX;
         int y = boundingY;
@@ -335,19 +350,7 @@ public final class PlayerOutliner extends Feature implements RegisterCommandList
     }
 
 
-    private void enableScissorsGL(int x1, int y1, int x2, int y2) {
-        int scissorWidth = x2 - x1;
-        int scissorHeight = y2 - y1;
-        Window window = Mod.MC.getWindow();
-        double scaleFactor = window.getScaleFactor();
-        int windowHeight = window.getScaledHeight();
-        int glScissorX = (int) (x1 * scaleFactor);
-        int glScissorY = (int) ((windowHeight - y1 - scissorHeight) * scaleFactor);
-        int glScissorWidth = (int) (scissorWidth * scaleFactor);
-        int glScissorHeight = (int) (scissorHeight * scaleFactor);
 
-        RenderSystem.enableScissor(glScissorX, glScissorY, glScissorWidth, glScissorHeight);
-    }
 
     private BuiltBuffer bufferRect(
             int x, int y,

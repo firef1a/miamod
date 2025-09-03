@@ -46,7 +46,21 @@ dependencies {
 }
 
 loom {
+	//splitEnvironmentSourceSets()
+	mods {
+		"miamod" {
+			sourceSet sourceSets.main
+			//sourceSet sourceSets.client
+		}
+	}
+
 	accessWidenerPath = file("src/main/resources/miamod.accesswidener")
+}
+
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
 }
 
 processResources {

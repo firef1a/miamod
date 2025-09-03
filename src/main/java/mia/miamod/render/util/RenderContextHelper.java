@@ -1,9 +1,11 @@
 package mia.miamod.render.util;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import mia.miamod.Mod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.Window;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -112,5 +114,23 @@ public abstract class RenderContextHelper {
         corners.add(new Vec3d(box.minX, box.maxY, box.maxZ));
 
         return corners;
+    }
+
+    public static void enableScissorsGL(int x1, int y1, int x2, int y2) {
+        int scissorWidth = x2 - x1;
+        int scissorHeight = y2 - y1;
+        Window window = Mod.MC.getWindow();
+        double scaleFactor = window.getScaleFactor();
+        int windowHeight = window.getScaledHeight();
+        int glScissorX = (int) (x1 * scaleFactor);
+        int glScissorY = (int) ((windowHeight - y1 - scissorHeight) * scaleFactor);
+        int glScissorWidth = (int) (scissorWidth * scaleFactor);
+        int glScissorHeight = (int) (scissorHeight * scaleFactor);
+
+        RenderSystem.enableScissor(glScissorX, glScissorY, glScissorWidth, glScissorHeight);
+    }
+
+    public static void disableScissorsGL() {
+        RenderSystem.disableScissor();
     }
 }
