@@ -3,7 +3,7 @@ package mia.miamod.core;
 import net.minecraft.client.option.KeyBinding;
 
 public class MiaKeyBind extends KeyBinding {
-    private static long lastPressed;
+    private long lastPressed;
 
     public MiaKeyBind(String translationKey, int code, KeyBindCategories category) {
         super(translationKey, code, category.displayName());

@@ -44,7 +44,7 @@ public class ConfigStore {
         }
 
         try {
-            FileManager.writeFile(FileManager.getConfigFile(), configData.toString());
+            FileManager.writeFile(FileManager.getConfigFile(), Mod.gson.toJson(configData));
             Mod.log("Saved config: " + FileManager.getConfigFile().getName());
         } catch (Exception e) {
             Mod.error("Couldn't save config: " + e);

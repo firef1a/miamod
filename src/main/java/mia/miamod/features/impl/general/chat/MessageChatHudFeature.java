@@ -77,7 +77,7 @@ public final class MessageChatHudFeature extends Feature implements RenderHUD, T
     public void renderHUD(DrawContext context, RenderTickCounter tickCounter) {
         //if (!this.getEnabled()) return;
         //Mod.MC.inGameHud.getChatHud().isChatFocused()
-        if (!(Mod.getCurrentScreen() instanceof ChatScreen)) {
+        if (!(Mod.getCurrentScreen() instanceof ChatScreen chatScreen) && !Mod.MC.options.hudHidden) {
             messageChatHud.render(context, Mod.tick, 0,0, Mod.getCurrentScreen() instanceof ChatScreen);
         }
     }

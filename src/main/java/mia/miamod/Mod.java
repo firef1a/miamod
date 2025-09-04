@@ -40,6 +40,7 @@ public class Mod implements ClientModInitializer {
 	public void onInitializeClient() {
 		System.setProperty("java.awt.headless", "false");
 
+
 		ConfigStore.load();
 		FeatureManager.init();
 		Mod.registerCallbacks();
@@ -79,7 +80,9 @@ public class Mod implements ClientModInitializer {
 	}
 	public static void sendCommand(String command) {
 		if (command.charAt(0) == '/') {
-			Objects.requireNonNull(Mod.MC.getNetworkHandler()).sendChatCommand(command.substring(1));
+			if (Mod.MC.getNetworkHandler() != null) {
+				Mod.MC.getNetworkHandler().sendChatCommand(command.substring(1));
+			}
 		}
 	}
 

@@ -53,6 +53,7 @@ public final class CPUDisplay extends Feature implements RenderHUD, PacketListen
 
     @Override
     public void renderHUD(DrawContext context, RenderTickCounter tickCounter) {
+        if (Mod.MC.options.hudHidden) return;
         if (overlayTimeoutTimestamp >= System.currentTimeMillis()) {
             animation = Math.min(1, animation + animationSpeed);
         } else {

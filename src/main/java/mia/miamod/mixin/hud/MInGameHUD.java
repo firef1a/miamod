@@ -1,6 +1,7 @@
 package mia.miamod.mixin.hud;
 
 import mia.miamod.Mod;
+import mia.miamod.render.hud_screens.InGameHudManager;
 import mia.miamod.render.util.ARGB;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -22,7 +23,7 @@ public abstract class MInGameHUD {
 
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
     private void onRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-
+        InGameHudManager.onRender(context, tickCounter, ci);
         //Mod.MC.mouse.unlockCursor();
         //context.fill(100,100,500,500,new ARGB(0xFFFFFF, 0.3F).getARGB());
     }
@@ -34,6 +35,7 @@ public abstract class MInGameHUD {
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
     private void renderCrosshair(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        InGameHudManager.renderCrosshair(context, tickCounter, ci);
        //ci.cancel();
     }
 
@@ -55,9 +57,6 @@ public abstract class MInGameHUD {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;shouldRenderSpectatorCrosshair(Lnet/minecraft/util/hit/HitResult;)Z", shift = At.Shift.AFTER), method = "renderCrosshair")
     private void afterBlitRenderCrosshairSliced(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-
-    }
-    {
 
     }
 }

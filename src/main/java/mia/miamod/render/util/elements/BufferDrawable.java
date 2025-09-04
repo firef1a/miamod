@@ -45,7 +45,8 @@ public abstract class BufferDrawable {
         return (parent != null) ?
                 tl      .add(parent.topLeft().add(getParentBinding().getXBinding().getScale() * parent.getWidth(), getParentBinding().getYBinding().getScale() * parent.getHeight(), 0))
                         .add(-getSelfBinding().getXBinding().getScale() * getWidth(),-getSelfBinding().getYBinding().getScale() * getHeight(),0)
-                : tl.add(0,0,z);
+                : tl.add(0,0,z)
+                .add(-getSelfBinding().getXBinding().getScale() * getWidth(),-getSelfBinding().getYBinding().getScale() * getHeight(),0);
     }
 
     public Vector3f topRight() { return topLeft().add(width,0,0); }
@@ -72,6 +73,9 @@ public abstract class BufferDrawable {
     }
 
     public Matrix4f getFinalRenderMatrix4f() {
+        if (matrix4f == null || renderMatrix4f == null) {
+            return new Matrix4f().identity();
+        }
         return new Matrix4f(matrix4f).mul(new Matrix4f(renderMatrix4f));
     }
 

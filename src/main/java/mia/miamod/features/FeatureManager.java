@@ -1,8 +1,10 @@
 package mia.miamod.features;
 
 import mia.miamod.features.impl.development.CodeSignColorer;
+import mia.miamod.features.impl.development.ModeSwitcher;
 import mia.miamod.features.impl.development.cpudisplay.CPUDisplay;
 import mia.miamod.features.impl.general.AutoTip;
+import mia.miamod.features.impl.general.NodeSwitcher;
 import mia.miamod.features.impl.general.chat.BetterSCTags;
 import mia.miamod.features.impl.general.chat.MessageChatHudFeature;
 import mia.miamod.features.impl.general.title.JoinButton;
@@ -49,7 +51,9 @@ public abstract class FeatureManager {
         add(new AutoTip(Categories.GENERAL));
         add(new BetterSCTags(Categories.GENERAL));
         add(new MessageChatHudFeature(Categories.GENERAL));
+        add(new NodeSwitcher(Categories.GENERAL));
 
+        add(new ModeSwitcher(Categories.DEV));
         add(new CPUDisplay(Categories.DEV));
         add(new ItemTagViewer(Categories.DEV));
         add(new CodeSignColorer(Categories.DEV));

@@ -20,6 +20,7 @@ import org.lwjgl.glfw.GLFW;
 public final class ConfigScreenFeature extends Feature implements RegisterKeyBindEvent, TickEvent, RenderHUD, AlwaysEnabled {
     private static MiaKeyBind openConfig;
     private static ConfigScreen configScreen;
+
     public ConfigScreenFeature(Categories category) {
         super(category, "conifg screen", "congifscreen", "description");
         openConfig = new MiaKeyBind("Open Config", GLFW.GLFW_KEY_RIGHT_SHIFT, KeyBindCategories.GENERAL_CATEGORY);

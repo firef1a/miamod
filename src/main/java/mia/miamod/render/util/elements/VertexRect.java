@@ -73,7 +73,7 @@ public class VertexRect extends BufferDrawable {
         int x = (int)topLeft().x;
         int y = (int)topLeft().y;
         int width = (int) getWidth();
-        int height = (int) getWidth();
+        int height = (int) getHeight();
         int z = (int) this.z;
 
         context.fill(x, y, x + width, y + 1, z, color);
