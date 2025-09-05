@@ -369,6 +369,6 @@ public final class PlayerOutliner extends Feature implements RegisterCommandList
     }
 
     private ARGB getRainbowARGB(long phase, int period) {
-        return new ARGB(Color.HSBtoRGB((((System.currentTimeMillis() + (phase * period)) % (1000L * period)) / (1000f * period)), 1f , 1f), 1f);
+        return new ARGB(Color.HSBtoRGB((((System.currentTimeMillis() + (phase * period)) % (1000L * period)) / (1000f * period)), 0.5f , 1f), 1f);
     }
 }

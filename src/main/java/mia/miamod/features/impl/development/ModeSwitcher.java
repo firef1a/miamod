@@ -22,7 +22,7 @@ public final class ModeSwitcher extends Feature implements RegisterKeyBindEvent,
 
     public ModeSwitcher(Categories category) {
         super(category, "Mode Switcher", "modeswitch", "bot or top");
-        openSwitcher = new MiaKeyBind("Mode Switcher", GLFW.GLFW_KEY_J, KeyBindCategories.GENERAL_CATEGORY);
+        openSwitcher = new MiaKeyBind("Mode Switcher", GLFW.GLFW_KEY_K, KeyBindCategories.GENERAL_CATEGORY);
     }
 
     @Override

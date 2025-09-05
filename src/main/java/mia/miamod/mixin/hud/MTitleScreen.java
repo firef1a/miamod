@@ -29,7 +29,6 @@ public abstract class MTitleScreen extends Screen {
 
     @Unique
     private static IconButtonWidget createIconButton(TexturedButtonWidget.PressAction onPress) {
-        Text text = Text.literal("Join DiamondFire");
         Tooltip tooltip = Tooltip.of(
                 Text.literal("Join DF: ").append(Text.literal("\n" + JoinButton.getCustomServerAddress()).withColor(ColorBank.MC_GRAY))
         );

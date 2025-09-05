@@ -41,7 +41,7 @@ public class ModeSwitchScreen extends InGameHudScreen {
         @Override
         protected void draw(DrawContext context, int mouseX, int mouseY) {
             boolean contains = containsPoint(mouseX, mouseY, true);
-            drawRect(context, new ARGB(0x000000, 0.15f));
+            drawRect(context, new ARGB(0x000000, 0.25f));
             drawBorder(context, contains ? (getEnabled() ? this.highlighEnabledARGB() : this.highlightARGB()) : (getEnabled() ? this.enabledARGB() : this.argb()));
         }
     }
